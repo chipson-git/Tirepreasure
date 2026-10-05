@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#14181c">
+  <meta name="theme-color" content="#ffffff">
   <meta name="description" content="ოფროუდ კალკულატორი: საბურავის წნევა (BAR / PSI) გზის საფარის, საბურავის ზომისა და დატვირთვის მიხედვით.">
   <title>ოფროუდ წნევა</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%23222' stroke='%23f59e0b' stroke-width='10'/><circle cx='50' cy='50' r='16' fill='%23f59e0b'/></svg>">
@@ -26,6 +26,18 @@
   </header>
 
   <main class="wrap grid">
+    <!-- პრესეტები -->
+    <section class="card span-2" aria-labelledby="h-presets">
+      <h2 id="h-presets">ჩემი პრესეტები</h2>
+      <form class="preset-form" id="preset-form">
+        <label for="preset-name" class="sr-only">პრესეტის სახელი</label>
+        <input type="text" id="preset-name" maxlength="40" placeholder="სახელი, მაგ. ჩემი Prado 33″" autocomplete="off">
+        <button type="submit" class="btn">შენახვა</button>
+      </form>
+      <p class="hint" id="preset-msg">ინახება საბურავის ზომა, მასა, ტვირთი, საბურავის ტიპი, ბიდლოკი და ქარხნული წნევა.</p>
+      <div class="presets" id="presets"></div>
+    </section>
+
     <!-- 1. საბურავი -->
     <section class="card" aria-labelledby="h-tire">
       <h2 id="h-tire"><span class="num">1</span> საბურავი და დისკი</h2>

@@ -12,48 +12,17 @@
   --warn-text: #8a4b00;
   --shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.04);
   --radius: 14px;
-  --header-bg: #14181c;
-  --header-fg: #ffffff;
-  --header-sub: #b6bdc4;
-  --header-accent: #f59e0b;
+  --header-bg: #ffffff;
+  --header-fg: #1d2125;
+  --header-sub: #646b72;
+  --header-accent: #d97706;
   --on-accent: #ffffff;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #111417;
-    --card: #1a1f24;
-    --text: #e8eaec;
-    --muted: #9aa3ab;
-    --line: #2a3138;
-    --accent: #f59e0b;
-    --accent-soft: #2c2213;
-    --accent-text: #fbbf24;
-    --good: #4ade80;
-    --warn-bg: #2a2014;
-    --warn-text: #fcd34d;
-    --shadow: none;
-    --on-accent: #1a1f24;
-    color-scheme: dark;
-  }
-}
-
-:root[data-theme="dark"] {
-    --bg: #111417;
-    --card: #1a1f24;
-    --text: #e8eaec;
-    --muted: #9aa3ab;
-    --line: #2a3138;
-    --accent: #f59e0b;
-    --accent-soft: #2c2213;
-    --accent-text: #fbbf24;
-    --good: #4ade80;
-    --warn-bg: #2a2014;
-    --warn-text: #fcd34d;
-    --shadow: none;
-    --on-accent: #1a1f24;
-    color-scheme: dark;
-}
+/* ერთი, ღია თემა — მომხმარებლის მოთხოვნით */
 
 * { box-sizing: border-box; }
 
@@ -71,7 +40,7 @@ body {
 .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
 
 /* header */
-.top { background: var(--header-bg); color: var(--header-fg); padding: 18px 0; margin-bottom: 20px; }
+.top { background: var(--header-bg); color: var(--header-fg); border-bottom: 1px solid var(--line); padding: 18px 0; margin-bottom: 20px; }
 .top-inner { display: flex; align-items: center; gap: 14px; }
 .logo { color: var(--header-accent); display: flex; }
 .top h1 { margin: 0; font-size: 1.4rem; letter-spacing: .01em; }
@@ -189,3 +158,39 @@ tr.current { background: var(--accent-soft) !important; }
 .disclaimer { color: var(--muted); font-size: .82rem; text-align: center; margin: 0; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+
+/* presets */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.preset-form { display: flex; gap: 8px; }
+.preset-form input {
+  flex: 1; min-width: 0; font: inherit; font-size: 1rem; color: var(--text);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px;
+}
+.btn {
+  border: 0; background: var(--accent); color: var(--on-accent); font: inherit; font-weight: 600;
+  border-radius: 10px; padding: 9px 18px; cursor: pointer; white-space: nowrap;
+}
+.btn:hover { filter: brightness(1.06); }
+.presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.presets-empty { margin: 0; color: var(--muted); font-size: .88rem; background: var(--bg); border-radius: 10px; padding: 12px 14px; grid-column: 1 / -1; }
+.preset {
+  display: flex; align-items: stretch; border: 1px solid var(--line); border-radius: 12px;
+  background: var(--card); overflow: hidden; min-width: 0;
+}
+.preset.active { border-color: var(--accent); background: var(--accent-soft); }
+.preset-apply {
+  flex: 1; min-width: 0; text-align: left; border: 0; background: transparent; color: var(--text);
+  font: inherit; padding: 10px 12px; cursor: pointer; display: flex; flex-direction: column; gap: 2px;
+}
+.preset-apply:hover .preset-name { color: var(--accent-text); }
+.preset-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.preset-sum { color: var(--muted); font-size: .8rem; font-variant-numeric: tabular-nums; }
+.preset-x {
+  border: 0; border-left: 1px solid var(--line); background: transparent; color: var(--muted);
+  width: 42px; font-size: .95rem; cursor: pointer;
+}
+.preset-x:hover { color: var(--danger); background: var(--danger-soft); }
+.preset-confirm { display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 6px 8px; border-left: 1px solid var(--line); }
+.btn-del, .btn-ghost { font: inherit; font-size: .8rem; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+.btn-del { border: 0; background: var(--danger); color: var(--on-accent); font-weight: 600; }
+.btn-ghost { border: 1px solid var(--line); background: var(--card); color: var(--text); }

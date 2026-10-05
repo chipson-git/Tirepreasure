@@ -3,6 +3,9 @@
 
   var C = window.TireCalc;
   var STORAGE_KEY = 'offroad-pressure-v1';
+  var PRESETS_KEY = 'offroad-pressure-presets-v1';
+  // პრესეტში ინახება ყველაფერი, გარდა გზის საფარისა
+  var PRESET_FIELDS = ['vehicleKg', 'cargoKg', 'tireType', 'beadlock', 'placardFront', 'placardRear'];
 
   var METRIC_WIDTHS = range(175, 335, 10);
   var METRIC_ASPECTS = range(40, 85, 5);
@@ -43,6 +46,8 @@
   };
 
   var state = load();
+  var presets = loadPresets();
+  var pendingDelete = null;
 
   function range(from, to, step) {
     var out = [];
@@ -66,6 +71,118 @@
 
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+  }
+
+  function loadPresets() {
+    try {
+      var list = JSON.parse(localStorage.getItem(PRESETS_KEY) || '[]');
+      return Array.isArray(list) ? list.filter(function (p) { return p && p.id && p.name && p.size; }) : [];
+    } catch (e) { return []; }
+  }
+
+  function savePresets() {
+    try { localStorage.setItem(PRESETS_KEY, JSON.stringify(presets)); return true; } catch (e) { return false; }
+  }
+
+  function snapshot() {
+    var snap = { size: Object.assign({}, state.size) };
+    PRESET_FIELDS.forEach(function (k) { snap[k] = state[k]; });
+    return snap;
+  }
+
+  function sameAsCurrent(p) {
+    var cur = snapshot();
+    var sizeKeys = cur.size.mode === 'inch' ? ['mode', 'diameter', 'inchWidth', 'inchRim'] : ['mode', 'width', 'aspect', 'rim'];
+    return sizeKeys.every(function (k) { return p.size[k] === cur.size[k]; }) &&
+      PRESET_FIELDS.every(function (k) { return String(p[k]) === String(cur[k]); });
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function presetSummary(p) {
+    var size = p.size.mode === 'inch'
+      ? p.size.diameter + 'x' + p.size.inchWidth + ' R' + p.size.inchRim
+      : p.size.width + '/' + p.size.aspect + ' R' + p.size.rim;
+    return size + ' · ' + p.vehicleKg + ' კგ' + (p.cargoKg ? ' + ' + p.cargoKg : '') +
+      ' · ' + (p.tireType === 'lt' ? 'LT' : 'SUV') + (p.beadlock ? ' · ბიდლოკი' : '');
+  }
+
+  function presetMsg(text) { $('preset-msg').textContent = text; }
+
+  function renderPresets() {
+    var el = $('presets');
+    if (!presets.length) {
+      el.innerHTML = '<p class="presets-empty">ჯერ პრესეტი არ გაქვს. აირჩიე საბურავი და მანქანა ქვემოთ, ჩაწერე სახელი და დააჭირე „შენახვა“.</p>';
+      return;
+    }
+    el.innerHTML = presets.map(function (p) {
+      var confirming = pendingDelete === p.id;
+      return '<div class="preset' + (sameAsCurrent(p) ? ' active' : '') + '">' +
+        '<button type="button" class="preset-apply" data-apply="' + p.id + '">' +
+          '<span class="preset-name">' + escapeHtml(p.name) + '</span>' +
+          '<span class="preset-sum">' + escapeHtml(presetSummary(p)) + '</span>' +
+        '</button>' +
+        (confirming
+          ? '<div class="preset-confirm"><button type="button" class="btn-del" data-confirm="' + p.id + '">წაშლა</button>' +
+            '<button type="button" class="btn-ghost" data-cancel="1">გაუქმება</button></div>'
+          : '<button type="button" class="preset-x" data-delete="' + p.id + '" aria-label="წაშალე ' + escapeHtml(p.name) + '" title="წაშლა">✕</button>') +
+        '</div>';
+    }).join('');
+  }
+
+  function bindPresets() {
+    $('preset-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = $('preset-name').value.trim();
+      if (!name) { presetMsg('ჩაწერე პრესეტის სახელი.'); $('preset-name').focus(); return; }
+      var existing = presets.filter(function (p) { return p.name.toLowerCase() === name.toLowerCase(); })[0];
+      var data = snapshot();
+      if (existing) {
+        Object.assign(existing, data);
+      } else {
+        presets.push(Object.assign({ id: 'p' + Date.now().toString(36), name: name }, data));
+      }
+      pendingDelete = null;
+      var ok = savePresets();
+      $('preset-name').value = '';
+      presetMsg(!ok ? 'ბრაუზერმა შენახვის უფლება არ მისცა — პრესეტი მხოლოდ ამ სესიაში იარსებებს.'
+        : existing ? '„' + name + '“ განახლდა.' : '„' + name + '“ შეინახა.');
+      renderPresets();
+    });
+
+    $('presets').addEventListener('click', function (e) {
+      var t = e.target.closest('button');
+      if (!t) return;
+      if (t.dataset.apply) {
+        var p = presets.filter(function (x) { return x.id === t.dataset.apply; })[0];
+        if (!p) return;
+        state.size = Object.assign({}, defaults.size, p.size);
+        PRESET_FIELDS.forEach(function (k) { if (k in p) state[k] = p[k]; });
+        pendingDelete = null;
+        presetMsg('ჩაიტვირთა „' + p.name + '“. აირჩიე გზის საფარი.');
+        update();
+        $('h-surface').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (t.dataset.delete) {
+        pendingDelete = t.dataset.delete;
+        renderPresets();
+        var c = document.querySelector('[data-confirm]');
+        if (c) c.focus();
+      } else if (t.dataset.confirm) {
+        var gone = presets.filter(function (x) { return x.id === t.dataset.confirm; })[0];
+        presets = presets.filter(function (x) { return x.id !== t.dataset.confirm; });
+        pendingDelete = null;
+        savePresets();
+        presetMsg(gone ? '„' + gone.name + '“ წაიშალა.' : '');
+        renderPresets();
+      } else if (t.dataset.cancel) {
+        pendingDelete = null;
+        renderPresets();
+      }
+    });
   }
 
   function fillSelect(el, values, fmt) {
@@ -103,6 +220,7 @@
     }).join('');
 
     bind();
+    bindPresets();
     syncInputs();
     render();
   }
@@ -230,6 +348,7 @@
   // ---------- რენდერი ----------
 
   function render() {
+    renderPresets();
     $('cargo-out').textContent = state.cargoKg + ' კგ';
 
     document.querySelectorAll('[data-surface]').forEach(function (b) {
