@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ka">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#14181c">
+  <meta name="description" content="ოფროუდ კალკულატორი: საბურავის წნევა (BAR / PSI) გზის საფარის, საბურავის ზომისა და დატვირთვის მიხედვით.">
+  <title>ოფროუდ წნევა</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%23222' stroke='%23f59e0b' stroke-width='10'/><circle cx='50' cy='50' r='16' fill='%23f59e0b'/></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-inner">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="40" height="40">
+          <circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width="5" stroke-dasharray="6 3"/>
+          <circle cx="24" cy="24" r="9" fill="currentColor"/>
+        </svg>
+      </div>
+      <div>
+        <h1>ოფროუდ წნევა</h1>
+        <p class="sub">საბურავის წნევის კალკულატორი გზის საფარის მიხედვით</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap grid">
+    <!-- 1. საბურავი -->
+    <section class="card" aria-labelledby="h-tire">
+      <h2 id="h-tire"><span class="num">1</span> საბურავი და დისკი</h2>
+
+      <div class="seg" role="tablist" aria-label="ზომის ფორმატი">
+        <button type="button" class="seg-btn active" data-mode="metric" role="tab">მეტრული (265/70 R16)</button>
+        <button type="button" class="seg-btn" data-mode="inch" role="tab">ინჩური (33x12.5 R15)</button>
+      </div>
+
+      <div class="fields" id="metric-fields">
+        <label>სიგანე (მმ)
+          <select id="m-width"></select>
+        </label>
+        <label>პროფილი (%)
+          <select id="m-aspect"></select>
+        </label>
+        <label>დისკი (R)
+          <select id="m-rim"></select>
+        </label>
+      </div>
+
+      <div class="fields hidden" id="inch-fields">
+        <label>დიამეტრი (″)
+          <select id="i-diameter"></select>
+        </label>
+        <label>სიგანე (″)
+          <select id="i-width"></select>
+        </label>
+        <label>დისკი (R)
+          <select id="i-rim"></select>
+        </label>
+      </div>
+
+      <p class="label-sm">პოპულარული ზომები</p>
+      <div class="chips" id="tire-presets"></div>
+
+      <div class="geom" id="geom"></div>
+    </section>
+
+    <!-- 2. ავტომობილი -->
+    <section class="card" aria-labelledby="h-car">
+      <h2 id="h-car"><span class="num">2</span> ავტომობილი და დატვირთვა</h2>
+
+      <p class="label-sm">ავტომობილის ტიპი</p>
+      <div class="chips" id="vehicle-presets"></div>
+
+      <div class="fields two">
+        <label>მასა (კგ)
+          <input type="number" id="vehicle-kg" min="700" max="5000" step="50" inputmode="numeric">
+        </label>
+        <label>საბურავის ტიპი
+          <select id="tire-type">
+            <option value="p">SUV / A/T (ჩვეულებრივი)</option>
+            <option value="lt">LT (A/T, M/T, მძიმე)</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="range-label">დამატებითი ტვირთი: <strong id="cargo-out">0 კგ</strong>
+        <input type="range" id="cargo-kg" min="0" max="1000" step="25" value="0">
+      </label>
+      <div class="range-hints"><span>ცარიელი</span><span>მგზავრები</span><span>ექსპედიცია</span></div>
+
+      <label class="check">
+        <input type="checkbox" id="beadlock">
+        <span>მაქვს ბიდლოკ (beadlock) დისკები</span>
+      </label>
+
+      <details class="placard">
+        <summary>მწარმოებლის წნევა (არასავალდებულო)</summary>
+        <p class="hint">თუ იცი ქარხნული წნევა (კარის ჩარჩოზე სტიკერი), შეიყვანე — გამოთვლა მას დაეყრდნობა.</p>
+        <div class="fields two">
+          <label>წინა (bar)
+            <input type="number" id="placard-front" min="1" max="5" step="0.1" placeholder="მაგ. 2.2" inputmode="decimal">
+          </label>
+          <label>უკანა (bar)
+            <input type="number" id="placard-rear" min="1" max="5" step="0.1" placeholder="მაგ. 2.4" inputmode="decimal">
+          </label>
+        </div>
+      </details>
+    </section>
+
+    <!-- 3. საფარი -->
+    <section class="card span-2" aria-labelledby="h-surface">
+      <h2 id="h-surface"><span class="num">3</span> გზის საფარი</h2>
+      <div class="surfaces" id="surfaces" role="radiogroup" aria-label="გზის საფარი"></div>
+    </section>
+
+    <!-- შედეგი -->
+    <section class="card span-2 result" aria-labelledby="h-result" aria-live="polite">
+      <h2 id="h-result">რეკომენდებული წნევა: <span id="res-surface"></span></h2>
+
+      <div class="axles">
+        <div class="axle">
+          <div class="axle-title">წინა საბურავები</div>
+          <div class="big"><span id="front-bar">–</span><small>bar</small></div>
+          <div class="psi"><span id="front-psi">–</span> psi</div>
+          <div class="range" id="front-range"></div>
+        </div>
+        <div class="axle">
+          <div class="axle-title">უკანა საბურავები</div>
+          <div class="big"><span id="rear-bar">–</span><small>bar</small></div>
+          <div class="psi"><span id="rear-psi">–</span> psi</div>
+          <div class="range" id="rear-range"></div>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div class="pill" id="speed-pill"></div>
+        <div class="pill" id="drop-pill"></div>
+      </div>
+
+      <p class="tip" id="surface-tip"></p>
+      <ul class="warnings" id="warnings"></ul>
+    </section>
+
+    <!-- ცხრილი -->
+    <section class="card span-2" aria-labelledby="h-table">
+      <h2 id="h-table">ყველა საფარი ერთად</h2>
+      <p class="hint">შენი ზომისა და დატვირთვისთვის. შეგიძლია გადაუღო სქრინი და გზაში გამოიყენო.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>საფარი</th><th>წინა bar</th><th>წინა psi</th><th>უკანა bar</th><th>უკანა psi</th><th>მაქს. სიჩქ.</th></tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- კონვერტერი -->
+    <section class="card" aria-labelledby="h-conv">
+      <h2 id="h-conv">BAR ⇄ PSI კონვერტერი</h2>
+      <div class="fields two">
+        <label>BAR
+          <input type="number" id="conv-bar" step="0.05" min="0" value="2.0" inputmode="decimal">
+        </label>
+        <label>PSI
+          <input type="number" id="conv-psi" step="0.5" min="0" inputmode="decimal">
+        </label>
+      </div>
+      <p class="hint">1 bar = 14.5 psi · 1 psi = 0.069 bar</p>
+    </section>
+
+    <!-- რჩევები -->
+    <section class="card" aria-labelledby="h-tips">
+      <h2 id="h-tips">ოფროუდ რჩევები</h2>
+      <ul class="tips">
+        <li>წნევა გაზომე <b>ცივ</b> საბურავზე — ნამგზავრ საბურავში 0.2–0.3 bar-ით მეტს აჩვენებს.</li>
+        <li>წაიღე <b>მანომეტრი</b>, <b>კომპრესორი</b> და დეფლატორი.</li>
+        <li>ყველა საბურავი ერთნაირად დაწიე, წინა/უკანა სხვაობა შეინარჩუნე.</li>
+        <li>დაბალ წნევაზე ერიდე მკვეთრ შემობრუნებას და მაღალ სიჩქარეს.</li>
+        <li>ასფალტზე გასვლამდე <b>აუცილებლად</b> აავსე საბურავები.</li>
+      </ul>
+    </section>
+
+    <p class="disclaimer span-2">
+      ⚠️ შედეგები საორიენტაციოა და ეფუძნება გავრცელებულ ოფროუდ პრაქტიკას.
+      ზუსტი გზის წნევისთვის იხელმძღვანელე ავტომობილის მწარმოებლის მითითებით და საბურავის მაქსიმალური დატვირთვით.
+    </p>
+  </main>
+
+  <script src="js/calc.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
