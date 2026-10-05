@@ -12,10 +12,15 @@
   --warn-text: #8a4b00;
   --shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.04);
   --radius: 14px;
+  --header-bg: #14181c;
+  --header-fg: #ffffff;
+  --header-sub: #b6bdc4;
+  --header-accent: #f59e0b;
+  --on-accent: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #111417;
     --card: #1a1f24;
     --text: #e8eaec;
@@ -28,7 +33,26 @@
     --warn-bg: #2a2014;
     --warn-text: #fcd34d;
     --shadow: none;
+    --on-accent: #1a1f24;
+    color-scheme: dark;
   }
+}
+
+:root[data-theme="dark"] {
+    --bg: #111417;
+    --card: #1a1f24;
+    --text: #e8eaec;
+    --muted: #9aa3ab;
+    --line: #2a3138;
+    --accent: #f59e0b;
+    --accent-soft: #2c2213;
+    --accent-text: #fbbf24;
+    --good: #4ade80;
+    --warn-bg: #2a2014;
+    --warn-text: #fcd34d;
+    --shadow: none;
+    --on-accent: #1a1f24;
+    color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -47,11 +71,11 @@ body {
 .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
 
 /* header */
-.top { background: #14181c; color: #fff; padding: 18px 0; margin-bottom: 20px; }
+.top { background: var(--header-bg); color: var(--header-fg); padding: 18px 0; margin-bottom: 20px; }
 .top-inner { display: flex; align-items: center; gap: 14px; }
-.logo { color: #f59e0b; display: flex; }
+.logo { color: var(--header-accent); display: flex; }
 .top h1 { margin: 0; font-size: 1.4rem; letter-spacing: .01em; }
-.top .sub { margin: 2px 0 0; color: #b6bdc4; font-size: .9rem; }
+.top .sub { margin: 2px 0 0; color: var(--header-sub); font-size: .9rem; }
 
 /* layout */
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-bottom: 40px; }
@@ -70,7 +94,7 @@ body {
 .num {
   display: inline-grid; place-items: center;
   width: 26px; height: 26px; border-radius: 50%;
-  background: var(--accent); color: #fff; font-size: .85rem;
+  background: var(--accent); color: var(--on-accent); font-size: .85rem;
 }
 
 .hidden { display: none !important; }
@@ -163,3 +187,5 @@ tr.current { background: var(--accent-soft) !important; }
 
 .tips { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: .92rem; }
 .disclaimer { color: var(--muted); font-size: .82rem; text-align: center; margin: 0; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
