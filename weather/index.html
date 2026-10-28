@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ka">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="5 ცნობილი ამინდის პროგნოზი ერთ ეკრანზე — yr.no, weather.com, AccuWeather, OpenWeatherMap, Open-Meteo — და მათი საერთო შედეგი.">
+  <title>ხუთი ამინდი</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="ხუთი ამინდი">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-inner">
+      <img class="logo" src="icons/icon.svg" width="40" height="40" alt="">
+      <div class="top-text">
+        <h1>ხუთი ამინდი</h1>
+        <p class="sub">5 პროგნოზი და მათი საერთო შედეგი</p>
+      </div>
+      <button type="button" class="icon-btn" id="refresh" title="განახლება" aria-label="განახლება">↻</button>
+      <button type="button" class="icon-btn" id="open-settings" title="API გასაღებები" aria-label="პარამეტრები">⚙</button>
+    </div>
+  </header>
+
+  <main class="wrap stack">
+    <!-- ძებნა და ქალაქები -->
+    <section class="card" aria-label="ქალაქის არჩევა">
+      <form class="search" id="search-form" autocomplete="off">
+        <label for="search-input" class="sr-only">ქალაქის ძებნა</label>
+        <input type="search" id="search-input" placeholder="ქალაქის ძებნა, მაგ. ბათუმი" enterkeyhint="search">
+        <button type="submit" class="btn">ძებნა</button>
+        <button type="button" class="btn ghost" id="gps" title="ჩემი მდებარეობა">📍<span class="hide-sm"> ჩემი მდებარეობა</span></button>
+      </form>
+      <ul class="results hidden" id="search-results"></ul>
+      <p class="hint hidden" id="search-msg"></p>
+      <div class="chips" id="favorites"></div>
+    </section>
+
+    <!-- საერთო პროგნოზი ახლა -->
+    <section class="card hero" aria-labelledby="place-name">
+      <div class="hero-head">
+        <div>
+          <h2 id="place-name">—</h2>
+          <p class="hint" id="place-meta"></p>
+        </div>
+        <button type="button" class="star" id="fav-toggle" aria-pressed="false" title="ფავორიტებში დამატება">☆</button>
+      </div>
+      <div class="hero-body" id="hero"></div>
+    </section>
+
+    <!-- 5 წყარო -->
+    <section class="card" aria-labelledby="h-sources">
+      <h2 id="h-sources">წყაროები ახლა</h2>
+      <div class="sources" id="sources"></div>
+    </section>
+
+    <!-- საათობრივი -->
+    <section class="card" aria-labelledby="h-hourly">
+      <h2 id="h-hourly">მომდევნო 24 საათი <span class="tag">საერთო</span></h2>
+      <div class="hourly" id="hourly" tabindex="0"></div>
+    </section>
+
+    <!-- შედარების გრაფიკი -->
+    <section class="card" aria-labelledby="h-chart">
+      <div class="card-head">
+        <h2 id="h-chart">ტემპერატურის შედარება</h2>
+        <div class="seg" role="tablist" aria-label="გრაფიკის პერიოდი">
+          <button type="button" class="seg-btn active" data-chart="hourly" role="tab">24 საათი</button>
+          <button type="button" class="seg-btn" data-chart="daily" role="tab">7 დღე (მაქს.)</button>
+        </div>
+      </div>
+      <div class="chart" id="chart"></div>
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <!-- 7 დღე -->
+    <section class="card" aria-labelledby="h-daily">
+      <h2 id="h-daily">7 დღე <span class="tag">საერთო</span></h2>
+      <p class="hint">დააჭირე დღეს, რომ ნახო თითოეული წყაროს პროგნოზი.</p>
+      <div class="daily" id="daily"></div>
+    </section>
+
+    <section class="card how">
+      <h2>როგორ ითვლება საერთო პროგნოზი</h2>
+      <ul>
+        <li><b>ტემპერატურა, ქარი, ნალექის რაოდენობა</b> — მედიანა (შუა მნიშვნელობა), ასე ერთი გადახრილი წყარო შედეგს ვერ აფუჭებს.</li>
+        <li><b>ამინდის ტიპი</b> (მზიანი, წვიმა...) — ხმათა უმრავლესობა. ფრის დროს იმარჯვებს ის, რომელიც ყველა ხმის „შუაშია“.</li>
+        <li><b>ნალექის ალბათობა</b> — საშუალო არითმეტიკული.</li>
+        <li><b>შეთანხმება</b> — <span class="agree high">მაღალი</span> როცა ტემპერატურა ≤2°-ით (დღიურ პროგნოზში ≤3°-ით) განსხვავდება და ¾+ წყარო ერთ ამინდზე თანხმდება, <span class="agree mid">საშუალო</span> — ≤4° (დღიურში ≤6°) და ნახევარი, სხვა შემთხვევაში <span class="agree low">დაბალი</span>.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    <p>მონაცემები: <a href="https://www.met.no/en" target="_blank" rel="noopener">MET Norway (yr.no)</a>,
+      <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo.com</a> (CC BY 4.0),
+      <a href="https://openweathermap.org" target="_blank" rel="noopener">OpenWeather</a>,
+      <a href="https://www.accuweather.com" target="_blank" rel="noopener">AccuWeather</a>,
+      <a href="https://weather.com" target="_blank" rel="noopener">The Weather Company</a>.
+      ქალაქების ძებნა: Open-Meteo Geocoding.</p>
+  </footer>
+
+  <!-- API გასაღებები -->
+  <dialog id="settings" aria-labelledby="h-settings">
+    <form method="dialog" id="settings-form">
+      <h2 id="h-settings">API გასაღებები</h2>
+      <p class="hint">yr.no და Open-Meteo გასაღების გარეშე მუშაობს. დანარჩენ სამს უფასო გასაღები სჭირდება.
+        გასაღებები ინახება მხოლოდ ამ მოწყობილობაზე.</p>
+      <div id="key-fields"></div>
+      <div class="dialog-actions">
+        <button type="button" class="btn ghost" id="settings-cancel">გაუქმება</button>
+        <button type="submit" class="btn" value="save">შენახვა</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast hidden" id="toast" role="status"></div>
+
+  <script src="js/consensus.js"></script>
+  <script src="js/providers.js"></script>
+  <script src="js/chart.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
