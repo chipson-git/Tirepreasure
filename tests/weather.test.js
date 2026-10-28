@@ -121,42 +121,26 @@ run('Open-Meteo პარსერი', () => {
   assert.strictEqual(r.hourly[1].cond, 'lightrain');
 });
 
-run('OpenWeatherMap პარსერი', () => {
-  const r = P.parseOwm(
-    { list: [{ dt: T0 / 1000, main: { temp: 13 }, weather: [{ id: 500 }], pop: 0.45, rain: { '3h': 0.8 }, wind: { speed: 2 } }] },
-    { main: { temp: 13.5, humidity: 70, pressure: 1014 }, weather: [{ id: 803 }], wind: { speed: 2.2 } },
-    TZ, T0);
-  assert.strictEqual(r.current.temp, 13.5);
+run('მოდელს „ახლანდელი“ თუ არ აქვს — ვიღებთ უახლოეს საათს', () => {
+  const sec = T0 / 1000;
+  const r = P.parseOpenMeteo({
+    utc_offset_seconds: 14400,
+    current: { temperature_2m: null, weather_code: null },
+    hourly: { time: [sec, sec + 3600, sec + 7200], temperature_2m: [12, 13, null], weather_code: [3, 3, null],
+      precipitation_probability: [null, null, null], precipitation: [0, 0, null], wind_speed_10m: [2, 2, null] },
+    daily: { time: [Date.parse('2026-10-27T20:00:00Z') / 1000, Date.parse('2026-10-28T20:00:00Z') / 1000],
+      weather_code: [3, null], temperature_2m_max: [15, null], temperature_2m_min: [7, null],
+      precipitation_sum: [0, null], precipitation_probability_max: [null, null], wind_speed_10m_max: [4, null] }
+  }, T0);
+  assert.strictEqual(r.current.temp, 12);
   assert.strictEqual(r.current.cond, 'cloudy');
-  assert.strictEqual(r.hourly[0].precipProb, 45);
-  assert.strictEqual(r.daily[0].precip, 0.8);
+  assert.strictEqual(r.hourly.length, 2);  // მოდელის ჰორიზონტს მიღმა ცარიელი საათები იშლება
+  assert.strictEqual(r.daily.length, 1);
 });
 
-run('AccuWeather პარსერი (კმ/სთ → მ/წ)', () => {
-  const r = P.parseAccu(
-    [{ Temperature: { Metric: { Value: 14 } }, WeatherIcon: 3, RelativeHumidity: 58,
-      Wind: { Speed: { Metric: { Value: 18 } } }, Pressure: { Metric: { Value: 1015 } } }],
-    [{ EpochDateTime: T0 / 1000, Temperature: { Value: 14 }, WeatherIcon: 12, PrecipitationProbability: 60,
-      TotalLiquid: { Value: 0.5 }, Wind: { Speed: { Value: 36 } } }],
-    { DailyForecasts: [{ Date: '2026-10-28T07:00:00+04:00', Temperature: { Minimum: { Value: 7 }, Maximum: { Value: 16 } },
-      Day: { Icon: 18, PrecipitationProbability: 70, TotalLiquid: { Value: 2 }, Wind: { Speed: { Value: 18 } } },
-      Night: { Icon: 7, PrecipitationProbability: 20, TotalLiquid: { Value: 1 }, Wind: { Speed: { Value: 9 } } } }] });
-  assert.strictEqual(r.current.wind, 5);
-  assert.strictEqual(r.hourly[0].wind, 10);
-  assert.deepStrictEqual([r.daily[0].date, r.daily[0].cond, r.daily[0].precipProb, r.daily[0].precip],
-    ['2026-10-28', 'rain', 70, 3]);
-});
-
-run('weather.com პარსერი (null დღის მაქსიმუმით)', () => {
-  const r = P.parseTwc(null,
-    { validTimeUtc: [T0 / 1000], temperature: [15], iconCode: [30], precipChance: [15], qpf: [0], windSpeed: [10.8], relativeHumidity: [50] },
-    { validTimeLocal: ['2026-10-28T07:00:00+0400', '2026-10-29T07:00:00+0400'], temperatureMax: [null, 18], temperatureMin: [9, 10],
-      qpf: [0, 4], daypart: [{ iconCode: [null, 27, 12, 11], precipChance: [null, 20, 80, 60], windSpeed: [null, 10, 20, 15] }] });
-  assert.strictEqual(r.current.temp, 15);       // მიმდინარე — საათობრივიდან
-  assert.strictEqual(r.current.wind, 3);
-  assert.strictEqual(r.daily[0].tmax, null);
-  assert.strictEqual(r.daily[0].cond, 'cloudy'); // დღის ნაწილი ცარიელია → ღამის
-  assert.strictEqual(r.daily[1].precipProb, 80);
+run('5 წყარო, ყველა გასაღების გარეშე', () => {
+  assert.deepStrictEqual(P.SOURCES.map(s => s.id), ['yr', 'ecmwf', 'gfs', 'icon', 'ukmo']);
+  P.SOURCES.forEach(s => assert.strictEqual(s.key, undefined));
 });
 
 /* ---------- საერთო პროგნოზი ---------- */

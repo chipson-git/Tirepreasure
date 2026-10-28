@@ -75,7 +75,6 @@ button:focus-visible, input:focus, summary:focus-visible, a:focus-visible { outl
 }
 .btn:hover { filter: brightness(1.06); }
 .btn.ghost { background: var(--bg); color: var(--text); border: 1px solid var(--line); }
-.link-btn { align-self: flex-start; text-align: left; border: 0; background: none; color: var(--accent-text); font: inherit; font-size: .85rem; padding: 0; cursor: pointer; text-decoration: underline; }
 
 /* search */
 .search { display: flex; gap: 8px; }
@@ -135,6 +134,7 @@ button:focus-visible, input:focus, summary:focus-visible, a:focus-visible { outl
 .src-head { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: .9rem; }
 .src-head a { color: var(--text); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .src-head a:hover { text-decoration: underline; }
+.src-by { font-size: .72rem; color: var(--muted); margin-top: -2px; }
 .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; flex: none; margin-right: 2px; }
 .src-main { display: flex; align-items: baseline; gap: 6px; margin-top: 4px; }
 .src-icon { font-size: 1.5rem; }
@@ -225,22 +225,6 @@ th { color: var(--muted); font-weight: 600; font-size: .78rem; }
 
 /* footer */
 .foot { color: var(--muted); font-size: .78rem; text-align: center; padding-bottom: 24px; }
-
-/* dialog */
-dialog {
-  border: 0; border-radius: 16px; padding: 0; width: min(520px, calc(100vw - 32px));
-  box-shadow: 0 10px 40px rgba(0,0,0,.2); color: var(--text); background: var(--card);
-}
-dialog::backdrop { background: rgba(15, 20, 25, .4); }
-dialog form { padding: 18px; display: grid; gap: 12px; }
-dialog h2 { margin: 0; font-size: 1.1rem; }
-.key-field { display: grid; gap: 4px; font-size: .9rem; font-weight: 600; }
-.key-field input {
-  font: inherit; font-size: .95rem; font-weight: 400; font-family: ui-monospace, Menlo, Consolas, monospace;
-  background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; color: var(--text); width: 100%;
-}
-.key-field small { font-weight: 400; color: var(--muted); font-size: .78rem; }
-.dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }
 
 /* toast */
 .toast {

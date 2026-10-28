@@ -7,19 +7,11 @@
 
   var LOC_KEY = 'wx-location-v1';
   var FAV_KEY = 'wx-favorites-v1';
-  var KEYS_KEY = 'wx-api-keys-v1';
-  var CACHE_PREFIX = 'wx-cache-v1:';
-  var ACCU_MIN_REFRESH_MIN = 30;   // AccuWeather-ის უფასო ლიმიტი 50 მოთხოვნაა დღეში
+  var CACHE_PREFIX = 'wx-cache-v2:';
 
   // წყაროს ფერი = მისი იდენტობა, ფიქსირებული რიგით
-  var COLORS = { yr: '#2a78d6', weathercom: '#eb6834', accu: '#1baf7a', owm: '#eda100', openmeteo: '#e87ba4' };
+  var COLORS = { yr: '#2a78d6', ecmwf: '#eb6834', gfs: '#1baf7a', icon: '#eda100', ukmo: '#e87ba4' };
   var CONSENSUS_COLOR = '#1d2125';
-
-  var KEY_INFO = {
-    twc: { label: 'weather.com (The Weather Company)', hint: 'უფასო გასაღები აქვს Weather Underground-ის პერსონალური ამინდის სადგურის მფლობელს; სხვა შემთხვევაში ფასიანია.' },
-    accu: { label: 'AccuWeather', hint: 'უფასო გეგმა: დღეში 50 მოთხოვნა. აპი ინახავს პასუხს 45 წუთით, რომ ლიმიტი არ ამოიწუროს.' },
-    owm: { label: 'OpenWeatherMap', hint: 'უფასო გეგმა (Free). ახალი გასაღები ჩაირთვება დაახლოებით 1–2 საათში.' }
-  };
 
   var DEFAULT_LOC = { name: 'თბილისი', country: 'საქართველო', lat: 41.6941, lon: 44.8337, tz: 'Asia/Tbilisi' };
 
@@ -34,17 +26,11 @@
   function save(key, value) {
     try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* სავსე ან დაბლოკილი */ }
   }
-  var kv = {
-    get: function (k) { return load('wx-kv:' + k, null); },
-    set: function (k, v) { save('wx-kv:' + k, v); }
-  };
-
   var state = {
     loc: load(LOC_KEY, DEFAULT_LOC),
     favorites: load(FAV_KEY, []),
-    keys: load(KEYS_KEY, {}),
     chart: 'hourly',
-    results: {},   // id -> { status: 'loading'|'ok'|'error'|'nokey', data, error, at }
+    results: {},   // id -> { status: 'loading'|'ok'|'error', data, error, at }
     loadToken: 0
   };
 
@@ -113,8 +99,8 @@
     return fetch(url, ctrl ? { signal: ctrl.signal } : {}).then(function (res) {
       clearTimeout(timer);
       if (!res.ok) {
-        var err = new Error(res.status === 401 || res.status === 403 ? 'გასაღები არასწორია ან არ არის აქტიური'
-          : res.status === 429 || res.status === 503 ? 'მოთხოვნების ლიმიტი ამოიწურა' : 'შეცდომა ' + res.status);
+        var err = new Error(res.status === 429 || res.status === 503 ? 'სერვისი გადატვირთულია, სცადე მოგვიანებით'
+          : 'შეცდომა ' + res.status);
         err.status = res.status;
         throw err;
       }
@@ -131,19 +117,14 @@
     var token = ++state.loadToken;
     var loc = state.loc;
     P.SOURCES.forEach(function (src) {
-      if (src.key && !state.keys[src.key]) {
-        state.results[src.id] = { status: 'nokey' };
-        return;
-      }
       var cached = load(cacheId(src), null);
       var ageMin = cached ? (Date.now() - cached.at) / 60000 : Infinity;
-      var minAge = src.id === 'accu' ? ACCU_MIN_REFRESH_MIN : 0;
-      if (cached && (ageMin < src.ttlMin && !force || ageMin < minAge)) {
+      if (cached && ageMin < src.ttlMin && !force) {
         state.results[src.id] = { status: 'ok', data: cached.data, at: cached.at };
         return;
       }
       state.results[src.id] = { status: 'loading', data: cached && cached.data, at: cached && cached.at };
-      src.fetch(loc, state.keys, get, kv).then(function (data) {
+      src.fetch(loc, get).then(function (data) {
         if (token !== state.loadToken) return;
         var at = Date.now();
         save(cacheId(src), { at: at, data: data });
@@ -263,12 +244,8 @@
     $('sources').innerHTML = P.SOURCES.map(function (src) {
       var r = state.results[src.id] || { status: 'loading' };
       var head = '<div class="src-head"><i class="swatch" style="background:' + COLORS[src.id] + '"></i>' +
-        '<a href="' + src.site + '" target="_blank" rel="noopener">' + esc(src.name) + '</a></div>';
-      if (r.status === 'nokey') {
-        return '<div class="src muted">' + head +
-          '<p class="src-msg">საჭიროა API გასაღები</p>' +
-          '<button type="button" class="link-btn" data-open-settings>გასაღების დამატება</button></div>';
-      }
+        '<a href="' + src.site + '" target="_blank" rel="noopener">' + esc(src.name) + '</a></div>' +
+        '<div class="src-by">' + esc(src.by) + '</div>';
       var d = r.data && r.data.current;
       if (!d) {
         return '<div class="src' + (r.status === 'error' ? ' err' : ' muted') + '">' + head +
@@ -457,44 +434,6 @@
     }).join('');
   }
 
-  /* ---------- პარამეტრები (API გასაღებები) ---------- */
-
-  function openSettings() {
-    $('key-fields').innerHTML = P.SOURCES.filter(function (s) { return s.key; }).map(function (s) {
-      var info = KEY_INFO[s.key];
-      return '<label class="key-field">' + esc(info.label) +
-        '<input type="text" name="' + s.key + '" value="' + esc(state.keys[s.key] || '') + '" spellcheck="false" autocapitalize="off" placeholder="API გასაღები">' +
-        '<small>' + esc(info.hint) + ' <a href="' + s.keyUrl + '" target="_blank" rel="noopener">გასაღების აღება ↗</a></small></label>';
-    }).join('');
-    var dlg = $('settings');
-    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
-  }
-
-  function closeSettings() {
-    var dlg = $('settings');
-    if (dlg.close) dlg.close(); else dlg.removeAttribute('open');
-  }
-
-  function saveSettings(e) {
-    e.preventDefault();
-    var changed = false;
-    Array.prototype.forEach.call($('key-fields').querySelectorAll('input'), function (inp) {
-      var v = inp.value.trim();
-      if ((state.keys[inp.name] || '') !== v) {
-        changed = true;
-        if (v) state.keys[inp.name] = v; else delete state.keys[inp.name];
-      }
-    });
-    save(KEYS_KEY, state.keys);
-    closeSettings();
-    if (changed) {
-      // ახალი გასაღებით ძველ ქეშს აღარ ვენდობით
-      P.SOURCES.forEach(function (s) { if (s.key) try { localStorage.removeItem(cacheId(s)); } catch (err) { /* */ } });
-      loadAll(true);
-      toast('გასაღებები შენახულია');
-    }
-  }
-
   /* ---------- მოვლენები ---------- */
 
   $('search-form').addEventListener('submit', function (e) {
@@ -510,12 +449,6 @@
     if (b) setLocation(state.favorites[Number(b.getAttribute('data-fav'))]);
   });
   $('refresh').addEventListener('click', function () { loadAll(true); toast('ვაახლებ პროგნოზებს…'); });
-  $('open-settings').addEventListener('click', openSettings);
-  $('settings-cancel').addEventListener('click', closeSettings);
-  $('settings-form').addEventListener('submit', saveSettings);
-  document.addEventListener('click', function (e) {
-    if (e.target.closest('[data-open-settings]')) openSettings();
-  });
   Array.prototype.forEach.call(document.querySelectorAll('[data-chart]'), function (b) {
     b.addEventListener('click', function () {
       state.chart = b.getAttribute('data-chart');

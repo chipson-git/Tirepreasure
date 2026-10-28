@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="5 ცნობილი ამინდის პროგნოზი ერთ ეკრანზე — yr.no, weather.com, AccuWeather, OpenWeatherMap, Open-Meteo — და მათი საერთო შედეგი.">
+  <meta name="description" content="5 ამინდის პროგნოზი ერთ ეკრანზე — yr.no, ECMWF, GFS, ICON, UK Met Office — და მათი საერთო შედეგი.">
   <title>ხუთი ამინდი</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -22,7 +22,6 @@
         <p class="sub">5 პროგნოზი და მათი საერთო შედეგი</p>
       </div>
       <button type="button" class="icon-btn" id="refresh" title="განახლება" aria-label="განახლება">↻</button>
-      <button type="button" class="icon-btn" id="open-settings" title="API გასაღებები" aria-label="პარამეტრები">⚙</button>
     </div>
   </header>
 
@@ -87,6 +86,7 @@
     <section class="card how">
       <h2>როგორ ითვლება საერთო პროგნოზი</h2>
       <ul>
+        <li><b>წყაროები</b> — yr.no-ს პროგნოზი და მსოფლიოს ოთხი წამყვანი ამინდის მოდელი: ევროპული (ECMWF), ამერიკული (GFS), გერმანული (ICON) და ბრიტანული (UK Met Office). ყველა უფასოა და გასაღებს არ საჭიროებს.</li>
         <li><b>ტემპერატურა, ქარი, ნალექის რაოდენობა</b> — მედიანა (შუა მნიშვნელობა), ასე ერთი გადახრილი წყარო შედეგს ვერ აფუჭებს.</li>
         <li><b>ამინდის ტიპი</b> (მზიანი, წვიმა...) — ხმათა უმრავლესობა. ფრის დროს იმარჯვებს ის, რომელიც ყველა ხმის „შუაშია“.</li>
         <li><b>ნალექის ალბათობა</b> — საშუალო არითმეტიკული.</li>
@@ -96,27 +96,11 @@
   </main>
 
   <footer class="wrap foot">
-    <p>მონაცემები: <a href="https://www.met.no/en" target="_blank" rel="noopener">MET Norway (yr.no)</a>,
-      <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo.com</a> (CC BY 4.0),
-      <a href="https://openweathermap.org" target="_blank" rel="noopener">OpenWeather</a>,
-      <a href="https://www.accuweather.com" target="_blank" rel="noopener">AccuWeather</a>,
-      <a href="https://weather.com" target="_blank" rel="noopener">The Weather Company</a>.
+    <p>მონაცემები: <a href="https://www.met.no/en" target="_blank" rel="noopener">MET Norway (yr.no)</a>;
+      ECMWF, NOAA GFS, DWD ICON და UK Met Office მოდელები —
+      <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo.com</a> (CC BY 4.0).
       ქალაქების ძებნა: Open-Meteo Geocoding.</p>
   </footer>
-
-  <!-- API გასაღებები -->
-  <dialog id="settings" aria-labelledby="h-settings">
-    <form method="dialog" id="settings-form">
-      <h2 id="h-settings">API გასაღებები</h2>
-      <p class="hint">yr.no და Open-Meteo გასაღების გარეშე მუშაობს. დანარჩენ სამს უფასო გასაღები სჭირდება.
-        გასაღებები ინახება მხოლოდ ამ მოწყობილობაზე.</p>
-      <div id="key-fields"></div>
-      <div class="dialog-actions">
-        <button type="button" class="btn ghost" id="settings-cancel">გაუქმება</button>
-        <button type="submit" class="btn" value="save">შენახვა</button>
-      </div>
-    </form>
-  </dialog>
 
   <div class="toast hidden" id="toast" role="status"></div>
 

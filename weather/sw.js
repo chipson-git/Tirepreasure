@@ -2,7 +2,7 @@
  * Service worker: აპის გარსი მუშაობს ინტერნეტის გარეშეც.
  * პროგნოზები ინახება localStorage-ში (app.js), ამიტომ API მოთხოვნებს აქ არ ვქეშავთ.
  */
-var CACHE = 'five-weather-v1';
+var CACHE = 'five-weather-v2';
 var SHELL = [
   './',
   'index.html',
