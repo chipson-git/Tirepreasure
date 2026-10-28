@@ -68,7 +68,8 @@
         pen = true;
       });
       if (!d) return;
-      svg('path', { d: d, fill: 'none', stroke: s.color, 'stroke-width': s.bold ? 3 : 2,
+      // ფერი style-ით, რომ CSS ცვლადი (თემის ფერი) იმუშაოს
+      svg('path', { d: d, fill: 'none', style: 'stroke:' + s.color, 'stroke-width': s.bold ? 3 : 2,
         'stroke-linejoin': 'round', 'stroke-linecap': 'round', class: s.bold ? 'c-line bold' : 'c-line' }, root);
     });
 
@@ -87,7 +88,7 @@
       ordered.slice().reverse().forEach(function (s) {
         var v = s.values[i];
         if (v == null) return;
-        svg('circle', { cx: x(i), cy: y(v), r: 4.5, fill: s.color, class: 'c-dot' }, dots);
+        svg('circle', { cx: x(i), cy: y(v), r: 4.5, style: 'fill:' + s.color, class: 'c-dot' }, dots);
         rows.push('<div class="c-row"><i style="background:' + s.color + '"></i><span>' + s.name +
           '</span><b>' + v.toFixed(1) + '°</b></div>');
       });

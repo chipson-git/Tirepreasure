@@ -10,8 +10,10 @@
   var CACHE_PREFIX = 'wx-cache-v2:';
 
   // წყაროს ფერი = მისი იდენტობა, ფიქსირებული რიგით
-  var COLORS = { yr: '#2a78d6', ecmwf: '#eb6834', gfs: '#1baf7a', icon: '#eda100', ukmo: '#e87ba4' };
-  var CONSENSUS_COLOR = '#1d2125';
+  // ფერები CSS ცვლადებია — ღია და მუქ თემაში თავისი მნიშვნელობა აქვს
+  var COLORS = { yr: 'var(--s-yr)', ecmwf: 'var(--s-ecmwf)', gfs: 'var(--s-gfs)', icon: 'var(--s-icon)', ukmo: 'var(--s-ukmo)' };
+  var CONSENSUS_COLOR = 'var(--s-consensus)';
+  var THEME_KEY = 'wx-theme-v1';
 
   var DEFAULT_LOC = { name: 'თბილისი', country: 'საქართველო', lat: 41.6941, lon: 44.8337, tz: 'Asia/Tbilisi' };
 
@@ -434,6 +436,31 @@
     }).join('');
   }
 
+  /* ---------- თემა: ღია / მუქი ---------- */
+
+  function currentTheme() {
+    var set = document.documentElement.getAttribute('data-theme');
+    if (set) return set;
+    return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function renderThemeButton() {
+    var dark = currentTheme() === 'dark';
+    var btn = $('theme-toggle');
+    btn.textContent = dark ? '☀' : '☾';
+    btn.title = dark ? 'ღია თემა' : 'მუქი თემა';
+    btn.setAttribute('aria-label', btn.title);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--card').trim() || '#ffffff');
+  }
+
+  function toggleTheme() {
+    var next = currentTheme() === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* */ }
+    renderThemeButton();
+  }
+
   /* ---------- მოვლენები ---------- */
 
   $('search-form').addEventListener('submit', function (e) {
@@ -448,6 +475,11 @@
     var b = e.target.closest('[data-fav]');
     if (b) setLocation(state.favorites[Number(b.getAttribute('data-fav'))]);
   });
+  $('theme-toggle').addEventListener('click', toggleTheme);
+  if (window.matchMedia) {
+    var mq = matchMedia('(prefers-color-scheme: dark)');
+    if (mq.addEventListener) mq.addEventListener('change', renderThemeButton);
+  }
   $('refresh').addEventListener('click', function () { loadAll(true); toast('ვაახლებ პროგნოზებს…'); });
   Array.prototype.forEach.call(document.querySelectorAll('[data-chart]'), function (b) {
     b.addEventListener('click', function () {
@@ -473,5 +505,6 @@
     navigator.serviceWorker.register('sw.js').catch(function () { /* PWA არასავალდებულოა */ });
   }
 
+  renderThemeButton();
   loadAll(false);
 })();

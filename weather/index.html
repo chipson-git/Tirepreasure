@@ -12,6 +12,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="ხუთი ამინდი">
   <link rel="stylesheet" href="css/style.css">
+  <script>
+    // არჩეული თემა ვრთავთ ხატვამდე, რომ ეკრანი არ „აციმციმდეს“
+    try { var t = localStorage.getItem('wx-theme-v1'); if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+  </script>
 </head>
 <body>
   <header class="top">
@@ -21,6 +25,7 @@
         <h1>ხუთი ამინდი</h1>
         <p class="sub">5 პროგნოზი და მათი საერთო შედეგი</p>
       </div>
+      <button type="button" class="icon-btn" id="theme-toggle" title="მუქი თემა" aria-label="მუქი თემა">☾</button>
       <button type="button" class="icon-btn" id="refresh" title="განახლება" aria-label="განახლება">↻</button>
     </div>
   </header>
