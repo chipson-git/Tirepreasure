@@ -82,6 +82,5 @@ Open `ratios/index.html` in a browser (or `http://localhost:8080/ratios/` with t
 
 - Liquidity (5), activity (7), solvency (3), profitability (6), investor & market (3) and dividend (2) ratios, each with the book's formula, a worked calculation, what it means and an exam tip
 - The sample company is the book's example (Examples 10-4 and 10-5), so results match the worked examples
-- Common-size (vertical/horizontal) income statement and a cash conversion cycle chart
 - Flashcards, a 10-question practice quiz (concepts, calculations, transaction effects) and a cheat sheet of exam traps
 - Light and dark theme

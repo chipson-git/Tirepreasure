@@ -101,19 +101,6 @@ label.inline { display: inline-flex; gap: 6px; align-items: center; font-size: .
 /* highlight formula */
 .formula { font-family: var(--f-mono); font-size: .86rem; background: var(--hl); padding: 1px 6px; border-radius: 3px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 
-/* snapshot */
-.snapshot { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 18px; }
-@media (max-width: 860px) { .snapshot { grid-template-columns: minmax(0, 1fr); } }
-.dp-box { flex: 1 1 84px; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; min-width: 0; }
-.dp-box .v { font-family: var(--f-mono); font-size: 1.3rem; font-weight: 500; }
-.dp-box .y1 { font-family: var(--f-mono); font-size: .78rem; color: var(--muted); }
-.dp-box.result { background: var(--accent-soft); border-color: transparent; }
-.dp-box.result .v { color: var(--accent); }
-.dp-op { align-self: center; font-family: var(--f-mono); color: var(--muted); font-size: 1.1rem; }
-.ccc-svg { width: 100%; height: auto; display: block; margin-top: 10px; }
-.ccc-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: .8rem; color: var(--muted); margin-top: 6px; }
-.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
-
 /* ratio grid */
 .cat-block { display: grid; gap: 12px; }
 .cat-title { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
@@ -221,36 +208,6 @@ tr.tot td.n { font-family: var(--f-mono); }
       <div>
         <h2>Financial ratios</h2>
         <p>The 26 ratios from Gleim CIA Challenge Study Unit 10, calculated from the book's example company (Examples 10-4 and 10-5). Click any card for the formula with the numbers plugged in, what it means, and the exam trap to watch for.</p>
-      </div>
-      <div class="row">
-        <div class="toggle" role="group" aria-label="Balance basis">
-          <button type="button" id="basisAvg" aria-pressed="true">Average balances</button>
-          <button type="button" id="basisEnd" aria-pressed="false">Ending balances</button>
-        </div>
-        <div class="toggle" role="group" aria-label="Days in year">
-          <button type="button" id="days365" aria-pressed="true">365 days</button>
-          <button type="button" id="days360" aria-pressed="false">360 days</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="snapshot">
-      <div class="panel">
-        <span class="eyebrow">Vertical &amp; horizontal analysis</span>
-        <h3>Common-size income statement</h3>
-        <div class="tbl-wrap" style="margin-top:10px"><table id="commonSize"></table></div>
-        <p class="small muted" style="margin-top:10px">Vertical analysis: every line as a percentage of net sales (sales = 100%). Change column: horizontal analysis, the percentage growth of each line since the prior year.</p>
-      </div>
-      <div class="panel">
-        <span class="eyebrow">Cash conversion cycle</span>
-        <h3 id="cccTitle">Days cash is tied up</h3>
-        <svg class="ccc-svg" id="cccSvg" viewBox="0 0 400 120" role="img" aria-label="Cash conversion cycle timeline"></svg>
-        <div class="ccc-legend">
-          <span><i class="sw" style="background:var(--accent)"></i>Days' sales in inventory</span>
-          <span><i class="sw" style="background:var(--warn)"></i>Days' sales in receivables</span>
-          <span><i class="sw" style="background:var(--bad)"></i>Days' payables outstanding</span>
-        </div>
-        <p class="small muted" id="cccNote" style="margin-top:12px"></p>
       </div>
     </div>
 
@@ -389,8 +346,8 @@ const SAMPLE = {
 };
 
 const state = JSON.parse(JSON.stringify(SAMPLE));
-let settings = Object.assign({ avg: true, days: 365 }, store.get("settings", {}));
-function save() { store.set("settings", settings); }
+const settings = { avg: true, days: 365 };
+function save() {}
 
 /* ---------- derived figures ---------- */
 function derive(r, prev) {
@@ -627,38 +584,7 @@ function renderRatios() {
           <span class="vals"><span class="big">${fmt(v2, r.unit)}</span>${r.needsPrev ? `<span class="prev">${y1}→${y2} change</span>` : `<span class="prev">${y1}: ${fmt(v1, r.unit)}</span>`}${deltaChip(r, v1, v2)}</span>
         </button>`; }).join("")}</div>
     </div>`).join("");
-  renderCommonSize();
-  renderCCC();
 }
-function renderCommonSize() {
-  const lines = [["Net sales", "sales", 1], ["Cost of goods sold", "cogs", -1], ["Gross profit", "gp", 1, true], ["SG&A expenses", "sga", -1], ["Operating income", "opInc", 1, true],
-    ["Other expenses, net", "other", -1], ["EBIT", "ebit", 1, true], ["Interest expense", "interest", -1], ["Income before taxes", "ebt", 1, true], ["Income taxes", "tax", -1], ["Net income", "ni", 1, true]];
-  const pct = (d, k, sg) => d.sales ? fmtPct(sg * d[k] / d.sales) : "n/a";
-  const fmtPct = v => (v < 0 ? "(" + nf1.format(-v * 100) + "%)" : nf1.format(v * 100) + "%");
-  const growth = k => D1[k] ? (D2[k] / D1[k] - 1) : NaN;
-  $("#commonSize").innerHTML = `<thead><tr><th>Line item</th><th class="n">${esc(state.y2Label)}</th><th class="n">${esc(state.y1Label)}</th><th class="n">Change</th></tr></thead><tbody>${lines.map(([lbl, k, sg, tot]) => {
-    const g = growth(k);
-    return `<tr${tot ? ' class="tot"' : ""}><td>${lbl}</td><td class="n num">${pct(D2, k, sg)}</td><td class="n num">${pct(D1, k, sg)}</td><td class="n num">${isFinite(g) ? (g >= 0 ? "+" : "−") + nf1.format(Math.abs(g) * 100) + "%" : "–"}</td></tr>`; }).join("")}</tbody>`;
-}
-function renderCCC() {
-  const dio = val("dsi", X2), dso = val("dsr", X2), dpo = val("dpo", X2), ccc = dio + dso - dpo;
-  const svg = $("#cccSvg");
-  if (![dio, dso, dpo].every(isFinite) || dio + dso <= 0) { svg.innerHTML = `<text x="10" y="60" fill="currentColor" font-size="12">Not enough data to draw the cycle.</text>`; return; }
-  const max = Math.max(dio + dso, dpo), W = 380, s = W / max, x0 = 10;
-  const t = (x, y, txt, anchor = "start") => `<text x="${x}" y="${y}" font-size="11" font-family="IBM Plex Mono, monospace" fill="var(--ink)" text-anchor="${anchor}">${txt}</text>`;
-  const cccX = x0 + dpo * s, cccW = Math.max(0, ccc * s);
-  svg.innerHTML = `
-    <rect x="${x0}" y="14" width="${dio * s}" height="20" rx="3" fill="var(--accent)"></rect>
-    <rect x="${x0 + dio * s}" y="14" width="${dso * s}" height="20" rx="3" fill="var(--warn)"></rect>
-    ${t(x0 + 4, 10, "DSI " + nf1.format(dio))}${t(x0 + (dio + dso) * s - 2, 10, "DSO " + nf1.format(dso), "end")}
-    <rect x="${x0}" y="48" width="${dpo * s}" height="20" rx="3" fill="var(--bad)"></rect>
-    ${t(x0 + 4, 82, "DPO " + nf1.format(dpo))}
-    ${ccc > 0 ? `<rect x="${cccX}" y="92" width="${cccW}" height="12" rx="2" fill="none" stroke="var(--ink)" stroke-dasharray="3 2"></rect>${t(Math.min(cccX + cccW, x0 + W), 118, "CCC " + nf1.format(ccc) + " days", "end")}` : t(x0, 118, "CCC " + nf1.format(ccc) + " days (negative: suppliers fund operations)")}`;
-  $("#cccTitle").textContent = `Cash is tied up for ${nf1.format(ccc)} days`;
-  const ccc1 = val("ccc", X1);
-  $("#cccNote").innerHTML = `Operating cycle (DSI + DSO) is <span class="num">${nf1.format(dio + dso)}</span> days. Suppliers finance <span class="num">${nf1.format(dpo)}</span> of those days, which leaves the cash conversion cycle. ${isFinite(ccc1) ? `${esc(state.y1Label)}: <span class="num">${nf1.format(ccc1)}</span> days.` : ""} Shorter is better.`;
-}
-
 /* drawer */
 let lastFocus = null;
 function openRatio(id) {
@@ -685,12 +611,6 @@ $("#overlay").addEventListener("click", e => { if (e.target.id === "overlay" || 
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#overlay").hidden) closeDrawer(); });
 $("#ratioGrid").addEventListener("click", e => { const b = e.target.closest("[data-ratio]"); if (b) openRatio(b.dataset.ratio); });
 $("#catChips").addEventListener("click", e => { const b = e.target.closest("[data-cat]"); if (b) { catFilter = b.dataset.cat; renderRatios(); } });
-function syncToggles() {
-  $("#basisAvg").setAttribute("aria-pressed", settings.avg); $("#basisEnd").setAttribute("aria-pressed", !settings.avg);
-  $("#days365").setAttribute("aria-pressed", settings.days === 365); $("#days360").setAttribute("aria-pressed", settings.days === 360);
-}
-[["#basisAvg", () => settings.avg = true], ["#basisEnd", () => settings.avg = false], ["#days365", () => settings.days = 365], ["#days360", () => settings.days = 360]]
-  .forEach(([s, f]) => $(s).addEventListener("click", () => { f(); save(); refreshAll(); }));
 
 function renderCompany() {
   $("#companyLine").innerHTML = `<b>${esc(state.company)}</b> · ${esc(state.y1Label)} → ${esc(state.y2Label)}`;
@@ -973,7 +893,7 @@ window.addEventListener("hashchange", () => { route(); window.scrollTo(0, 0); })
 function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 3200); }
 
 function refreshAll() {
-  recompute(); syncToggles(); renderCompany(); renderRatios(); renderSheet();
+  recompute(); renderCompany(); renderRatios(); renderSheet();
   if (!$("#view-cards").hidden || !deck.length) renderCard();
 }
 $("#fcCat").innerHTML = `<option value="all">All categories</option>` + CATS.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join("");
