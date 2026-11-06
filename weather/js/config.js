@@ -3,7 +3,7 @@
  * ცარიელი ველი = შესაბამისი ღილაკი არ ჩანს.
  */
 window.APP_CONFIG = {
-  // დონაციის ბმულები, მაგ.: { label: 'Bank of Georgia', url: 'https://...' }, { label: 'Ko-fi', url: 'https://ko-fi.com/...' }
+  // დონაციის ბმულები, მაგ.: { label: 'Bank of Georgia', url: 'https://...' }, { label: 'TBC', url: 'https://...' }
   donate: [],
   // ელფოსტა სპონსორებისთვის და შეტყობინებებისთვის
   contactEmail: ''
