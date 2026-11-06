@@ -10,6 +10,7 @@
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon-180.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="ხუთი ამინდი">
   <link rel="stylesheet" href="css/style.css">
   <script>
@@ -22,96 +23,227 @@
     <div class="wrap top-inner">
       <img class="logo" src="icons/icon.svg" width="40" height="40" alt="">
       <div class="top-text">
-        <h1>ხუთი ამინდი</h1>
-        <p class="sub">5 პროგნოზი და მათი საერთო შედეგი</p>
+        <h1 data-i18n="appName">ხუთი ამინდი</h1>
+        <p class="sub" data-i18n="appSub">5 პროგნოზი და მათი საერთო შედეგი</p>
       </div>
       <button type="button" class="icon-btn" id="theme-toggle" title="მუქი თემა" aria-label="მუქი თემა">☾</button>
-      <button type="button" class="icon-btn" id="refresh" title="განახლება" aria-label="განახლება">↻</button>
+      <button type="button" class="icon-btn" id="refresh" data-i18n-title="refresh" title="განახლება" aria-label="განახლება">↻</button>
+      <button type="button" class="icon-btn" id="open-settings" data-i18n-title="settings" title="პარამეტრები" aria-label="პარამეტრები">⚙</button>
     </div>
   </header>
 
-  <main class="wrap stack">
-    <!-- ძებნა და ქალაქები -->
-    <section class="card" aria-label="ქალაქის არჩევა">
-      <form class="search" id="search-form" autocomplete="off">
-        <label for="search-input" class="sr-only">ქალაქის ძებნა</label>
-        <input type="search" id="search-input" placeholder="ქალაქის ძებნა, მაგ. ბათუმი" enterkeyhint="search">
-        <button type="submit" class="btn">ძებნა</button>
-        <button type="button" class="btn ghost" id="gps" title="ჩემი მდებარეობა">📍<span class="hide-sm"> ჩემი მდებარეობა</span></button>
-      </form>
-      <ul class="results hidden" id="search-results"></ul>
-      <p class="hint hidden" id="search-msg"></p>
-      <div class="chips" id="favorites"></div>
-    </section>
+  <main class="wrap">
+    <!-- ================= ამინდი ================= -->
+    <div class="view stack" id="view-home">
+      <div id="alerts" class="alerts"></div>
 
-    <!-- საერთო პროგნოზი ახლა -->
-    <section class="card hero" aria-labelledby="place-name">
-      <div class="hero-head">
-        <div>
-          <h2 id="place-name">—</h2>
-          <p class="hint" id="place-meta"></p>
+      <section class="card" aria-label="search">
+        <form class="search" id="search-form" autocomplete="off">
+          <label for="search-input" class="sr-only" data-i18n="search">ძებნა</label>
+          <input type="search" id="search-input" data-i18n-ph="searchPh" placeholder="ქალაქის ძებნა, მაგ. ბათუმი" enterkeyhint="search">
+          <button type="submit" class="btn" data-i18n="search">ძებნა</button>
+          <button type="button" class="btn ghost" id="gps" data-i18n-title="myLocation">📍</button>
+        </form>
+        <ul class="results hidden" id="search-results"></ul>
+        <p class="hint hidden" id="search-msg"></p>
+        <div class="chips" id="favorites"></div>
+      </section>
+
+      <section class="card hero" aria-labelledby="place-name">
+        <div class="hero-head">
+          <div>
+            <h2 id="place-name">—</h2>
+            <p class="hint" id="place-meta"></p>
+          </div>
+          <div class="hero-actions">
+            <button type="button" class="icon-btn small" id="share" data-i18n-title="share">⇪</button>
+            <button type="button" class="star" id="fav-toggle" aria-pressed="false">☆</button>
+          </div>
         </div>
-        <button type="button" class="star" id="fav-toggle" aria-pressed="false" title="ფავორიტებში დამატება">☆</button>
-      </div>
-      <div class="hero-body" id="hero"></div>
-    </section>
+        <div class="hero-body" id="hero"></div>
+      </section>
 
-    <!-- 5 წყარო -->
-    <section class="card" aria-labelledby="h-sources">
-      <h2 id="h-sources">წყაროები ახლა</h2>
-      <div class="sources" id="sources"></div>
-    </section>
+      <section class="card" id="wear-card" aria-labelledby="h-wear">
+        <h2 id="h-wear" data-i18n="wearTitle">რა ჩავიცვა</h2>
+        <div id="wear"></div>
+      </section>
 
-    <!-- საათობრივი -->
-    <section class="card" aria-labelledby="h-hourly">
-      <h2 id="h-hourly">მომდევნო 24 საათი <span class="tag">საერთო</span></h2>
-      <div class="hourly" id="hourly" tabindex="0"></div>
-    </section>
+      <section class="card" aria-labelledby="h-details">
+        <h2 id="h-details" data-i18n="detailsTitle">დღის დეტალები</h2>
+        <div class="tiles" id="today"></div>
+      </section>
 
-    <!-- შედარების გრაფიკი -->
-    <section class="card" aria-labelledby="h-chart">
-      <div class="card-head">
-        <h2 id="h-chart">ტემპერატურის შედარება</h2>
-        <div class="seg" role="tablist" aria-label="გრაფიკის პერიოდი">
-          <button type="button" class="seg-btn active" data-chart="hourly" role="tab">24 საათი</button>
-          <button type="button" class="seg-btn" data-chart="daily" role="tab">7 დღე (მაქს.)</button>
+      <section class="card" aria-labelledby="h-sources">
+        <h2 id="h-sources" data-i18n="sourcesNow">წყაროები ახლა</h2>
+        <div class="sources" id="sources"></div>
+      </section>
+
+      <section class="card" aria-labelledby="h-hourly">
+        <h2 id="h-hourly"><span data-i18n="next24">მომდევნო 24 საათი</span> <span class="tag" data-i18n="consensus">საერთო</span></h2>
+        <div class="hourly" id="hourly" tabindex="0"></div>
+      </section>
+
+      <section class="card" aria-labelledby="h-chart">
+        <div class="card-head">
+          <h2 id="h-chart" data-i18n="tempCompare">ტემპერატურის შედარება</h2>
+          <div class="seg" role="tablist">
+            <button type="button" class="seg-btn active" data-chart="hourly" role="tab" data-i18n="chart24">24 საათი</button>
+            <button type="button" class="seg-btn" data-chart="daily" role="tab" data-i18n="chart7">7 დღე (მაქს.)</button>
+          </div>
         </div>
-      </div>
-      <div class="chart" id="chart"></div>
-      <div class="legend" id="legend"></div>
-    </section>
+        <div class="chart" id="chart"></div>
+        <div class="legend" id="legend"></div>
+      </section>
 
-    <!-- 7 დღე -->
-    <section class="card" aria-labelledby="h-daily">
-      <h2 id="h-daily">7 დღე <span class="tag">საერთო</span></h2>
-      <p class="hint">დააჭირე დღეს, რომ ნახო თითოეული წყაროს პროგნოზი.</p>
-      <div class="daily" id="daily"></div>
-    </section>
+      <section class="card" aria-labelledby="h-daily">
+        <h2 id="h-daily"><span data-i18n="days7">7 დღე</span> <span class="tag" data-i18n="consensus">საერთო</span></h2>
+        <p class="hint" data-i18n="dayHint">დააჭირე დღეს, რომ ნახო თითოეული წყაროს პროგნოზი.</p>
+        <div class="daily" id="daily"></div>
+      </section>
 
-    <section class="card how">
-      <h2>როგორ ითვლება საერთო პროგნოზი</h2>
-      <ul>
-        <li><b>წყაროები</b> — yr.no-ს პროგნოზი და მსოფლიოს ოთხი წამყვანი ამინდის მოდელი: ევროპული (ECMWF), ამერიკული (GFS), გერმანული (ICON) და ბრიტანული (UK Met Office). ყველა უფასოა და გასაღებს არ საჭიროებს.</li>
-        <li><b>ტემპერატურა, ქარი, ნალექის რაოდენობა</b> — მედიანა (შუა მნიშვნელობა), ასე ერთი გადახრილი წყარო შედეგს ვერ აფუჭებს.</li>
-        <li><b>ამინდის ტიპი</b> (მზიანი, წვიმა...) — ხმათა უმრავლესობა. ფრის დროს იმარჯვებს ის, რომელიც ყველა ხმის „შუაშია“.</li>
-        <li><b>ნალექის ალბათობა</b> — საშუალო არითმეტიკული.</li>
-        <li><b>შეთანხმება</b> — <span class="agree high">მაღალი</span> როცა ტემპერატურა ≤2°-ით (დღიურ პროგნოზში ≤3°-ით) განსხვავდება და ¾+ წყარო ერთ ამინდზე თანხმდება, <span class="agree mid">საშუალო</span> — ≤4° (დღიურში ≤6°) და ნახევარი, სხვა შემთხვევაში <span class="agree low">დაბალი</span>.</li>
-      </ul>
-    </section>
+      <section class="card" aria-labelledby="h-best">
+        <h2 id="h-best" data-i18n="bestTitle">საუკეთესო დღე ამ კვირაში</h2>
+        <div class="best" id="best"></div>
+      </section>
+
+      <section class="card how">
+        <h2 data-i18n="howTitle">როგორ ითვლება საერთო პროგნოზი</h2>
+        <ul>
+          <li data-i18n="how1"></li>
+          <li data-i18n="how2"></li>
+          <li data-i18n="how3"></li>
+          <li data-i18n="how4"></li>
+          <li data-i18n="how5"></li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- ================= რუკა ================= -->
+    <div class="view stack hidden" id="view-map">
+      <section class="card map-card" aria-labelledby="h-map">
+        <div class="card-head">
+          <h2 id="h-map" data-i18n="mapTitle">ნალექის რადარი</h2>
+          <div class="seg" role="tablist">
+            <button type="button" class="seg-btn active" data-layer="radar" role="tab" data-i18n="radar">რადარი</button>
+            <button type="button" class="seg-btn" data-layer="satellite" role="tab" data-i18n="satellite">თანამგზავრი</button>
+          </div>
+        </div>
+        <div class="map" id="map"></div>
+        <div class="map-controls">
+          <button type="button" class="btn ghost" id="map-play" data-i18n="play">დაკვრა</button>
+          <input type="range" id="map-frame" min="0" max="0" value="0" aria-label="time">
+          <span class="map-time" id="map-time">—</span>
+        </div>
+        <p class="hint" data-i18n="mapNote"></p>
+      </section>
+    </div>
+
+    <!-- ================= გზა და მთა ================= -->
+    <div class="view stack hidden" id="view-road">
+      <section class="card" aria-labelledby="h-road">
+        <h2 id="h-road" data-i18n="roadTitle">მძღოლისთვის — მომდევნო 12 საათი</h2>
+        <div id="road"></div>
+      </section>
+      <section class="card" aria-labelledby="h-passes">
+        <h2 id="h-passes" data-i18n="passesTitle">მთის უღელტეხილები</h2>
+        <div class="places" id="passes"></div>
+        <p class="hint" data-i18n="passNote"></p>
+      </section>
+      <section class="card" aria-labelledby="h-mountain">
+        <h2 id="h-mountain" data-i18n="mountainTitle">მთის რეჟიმი</h2>
+        <div id="mountain"></div>
+      </section>
+      <section class="card" aria-labelledby="h-resorts">
+        <h2 id="h-resorts" data-i18n="resortsTitle">სათხილამურო კურორტები</h2>
+        <div class="places" id="resorts"></div>
+        <p><a class="tire-link" href="../" data-i18n="tireLink">ოფროუდ კალკულატორი</a></p>
+      </section>
+    </div>
+
+    <!-- ================= სიზუსტე და ისტორია ================= -->
+    <div class="view stack hidden" id="view-accuracy">
+      <section class="card" aria-labelledby="h-acc">
+        <h2 id="h-acc" data-i18n="accTitle">რომელი წყაროა ყველაზე ზუსტი აქ</h2>
+        <p class="hint" data-i18n="accIntro"></p>
+        <div id="accuracy"></div>
+      </section>
+      <section class="card" aria-labelledby="h-hist">
+        <h2 id="h-hist" data-i18n="histTitle">ისტორია</h2>
+        <div id="history"></div>
+      </section>
+    </div>
   </main>
 
-  <footer class="wrap foot">
-    <p>მონაცემები: <a href="https://www.met.no/en" target="_blank" rel="noopener">MET Norway (yr.no)</a>;
-      ECMWF, NOAA GFS, DWD ICON და UK Met Office მოდელები —
-      <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo.com</a> (CC BY 4.0).
-      ქალაქების ძებნა: Open-Meteo Geocoding.</p>
-  </footer>
+  <footer class="wrap foot"><p data-i18n="footer"></p></footer>
+
+  <nav class="tabs" aria-label="sections">
+    <button type="button" class="tab active" data-tab="home"><span class="tab-i">☀</span><span data-i18n="tabHome">ამინდი</span></button>
+    <button type="button" class="tab" data-tab="map"><span class="tab-i">🗺</span><span data-i18n="tabMap">რუკა</span></button>
+    <button type="button" class="tab" data-tab="road"><span class="tab-i">⛰</span><span data-i18n="tabRoad">გზა და მთა</span></button>
+    <button type="button" class="tab" data-tab="accuracy"><span class="tab-i">🎯</span><span data-i18n="tabAccuracy">სიზუსტე</span></button>
+  </nav>
+
+  <dialog id="settings" aria-labelledby="h-settings">
+    <form method="dialog" id="settings-form">
+      <div class="dialog-head">
+        <h2 id="h-settings" data-i18n="setTitle">პარამეტრები</h2>
+        <button type="submit" class="icon-btn small" data-i18n-title="close">✕</button>
+      </div>
+      <fieldset>
+        <legend data-i18n="setLang">ენა</legend>
+        <div class="seg">
+          <label class="seg-opt"><input type="radio" name="lang" value="ka"><span>ქართული</span></label>
+          <label class="seg-opt"><input type="radio" name="lang" value="en"><span>English</span></label>
+          <label class="seg-opt"><input type="radio" name="lang" value="ru"><span>Русский</span></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend data-i18n="setTemp">ტემპერატურა</legend>
+        <div class="seg">
+          <label class="seg-opt"><input type="radio" name="temp" value="c"><span>°C</span></label>
+          <label class="seg-opt"><input type="radio" name="temp" value="f"><span>°F</span></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend data-i18n="setWind">ქარის სიჩქარე</legend>
+        <div class="seg">
+          <label class="seg-opt"><input type="radio" name="wind" value="ms"><span data-i18n="unitMs">მ/წ</span></label>
+          <label class="seg-opt"><input type="radio" name="wind" value="kmh"><span data-i18n="unitKmh">კმ/სთ</span></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend data-i18n="setTime">დრო</legend>
+        <div class="seg">
+          <label class="seg-opt"><input type="radio" name="time" value="24"><span data-i18n="h24">24 საათი</span></label>
+          <label class="seg-opt"><input type="radio" name="time" value="12"><span data-i18n="h12">12 საათი</span></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend data-i18n="setSources">წყაროები</legend>
+        <div class="checks" id="set-sources"></div>
+      </fieldset>
+      <label class="switch"><input type="checkbox" name="weighting" id="set-weighting">
+        <span><b data-i18n="setWeighting">სიზუსტით შეწონვა</b><small data-i18n="setWeightingHint"></small></span></label>
+      <label class="switch"><input type="checkbox" name="notify" id="set-notify">
+        <span><b data-i18n="setNotify">შეტყობინებები</b><small data-i18n="setNotifyHint"></small><small id="notify-status"></small></span></label>
+      <div class="dialog-actions">
+        <button type="submit" class="btn" data-i18n="close">დახურვა</button>
+      </div>
+    </form>
+  </dialog>
 
   <div class="toast hidden" id="toast" role="status"></div>
 
+  <script src="js/i18n.js"></script>
   <script src="js/consensus.js"></script>
   <script src="js/providers.js"></script>
+  <script src="js/extras.js"></script>
+  <script src="js/insights.js"></script>
+  <script src="js/astro.js"></script>
   <script src="js/chart.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/share.js"></script>
+  <script src="js/notify.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

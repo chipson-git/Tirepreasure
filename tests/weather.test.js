@@ -2,6 +2,10 @@
 const assert = require('assert');
 const W = require('../weather/js/consensus.js');
 const P = require('../weather/js/providers.js');
+const E = require('../weather/js/extras.js');
+const X = require('../weather/js/insights.js');
+const A = require('../weather/js/astro.js');
+const I = require('../weather/js/i18n.js');
 
 const H = W.HOUR;
 const TZ = 'Asia/Tbilisi';
@@ -100,9 +104,9 @@ run('yr.no პარსერი', () => {
   assert.strictEqual(r.current.temp, 15.2);
   assert.strictEqual(r.current.cond, 'partly');
   assert.strictEqual(r.hourly.length, 2);           // მხოლოდ next_1_hours წერტილები
-  assert.strictEqual(r.daily.length, 2);
   assert.strictEqual(r.daily[0].precip, 0.4);       // 6-საათიანი ნალექი ორჯერ არ ითვლება
-  assert.strictEqual(r.daily[1].precip, 2);
+  assert.strictEqual(r.daily.length, 1);            // არასრული ბოლო დღე (1 წერტილი) იშლება
+  assert.strictEqual(r.current.windDir, null);
 });
 
 run('Open-Meteo პარსერი', () => {
@@ -182,4 +186,168 @@ run('მიმდინარე საერთო', () => {
   assert.strictEqual(c.precipProb, 20);
   assert.strictEqual(c.sources, 3);
   assert.deepStrictEqual([c.tempMin, c.tempMax], [14, 15.5]);
+});
+
+/* ---------- შეწონვა და ქარი ---------- */
+
+run('შეწონილი მედიანა: თანაბარ წონაზე ჩვეულებრივი მედიანაა', () => {
+  assert.strictEqual(W.weightedMedian([{ v: 1, w: 1 }, { v: 2, w: 1 }, { v: 10, w: 1 }]), 2);
+  assert.strictEqual(W.weightedMedian([{ v: 1, w: 1 }, { v: 3, w: 1 }]), 2);
+  // ზუსტ წყაროს (დიდი წონა) მეტი გავლენა აქვს
+  assert.strictEqual(W.weightedMedian([{ v: 10, w: 3 }, { v: 12, w: 1 }, { v: 14, w: 1 }]), 10);
+});
+
+run('ქარის მიმართულების წრიული საშუალო', () => {
+  assert.ok(Math.abs(W.circularMean([350, 10]) % 360) < 1e-6 || Math.abs(W.circularMean([350, 10]) - 360) < 1e-6);
+  assert.ok(Math.abs(W.circularMean([80, 100]) - 90) < 1e-6);
+  assert.strictEqual(W.circularMean([]), null);
+});
+
+run('საერთო პროგნოზი წონებით', () => {
+  const c = W.combineCurrent({ a: { temp: 10 }, b: { temp: 14 }, c: { temp: 15 } }, { a: 5, b: 1, c: 1 });
+  assert.strictEqual(c.temp, 10);
+  assert.strictEqual(W.combineCurrent({ a: { temp: 10 }, b: { temp: 14 }, c: { temp: 15 } }).temp, 14);
+});
+
+/* ---------- მზე და მთვარე ---------- */
+
+run('მზის ამოსვლა/ჩასვლა თბილისში (±5 წთ)', () => {
+  const tz = { timeZone: 'Asia/Tbilisi', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' };
+  const s = A.sunTimes('2026-06-21', 41.6941, 44.8337);
+  const rise = new Date(s.sunrise).toLocaleTimeString('en-GB', tz), set = new Date(s.sunset).toLocaleTimeString('en-GB', tz);
+  // timeanddate.com: 05:28 / 20:39
+  const mins = x => Number(x.slice(0, 2)) * 60 + Number(x.slice(3, 5));
+  assert.ok(Math.abs(mins(rise) - (5 * 60 + 28)) <= 5, rise);
+  assert.ok(Math.abs(mins(set) - (20 * 60 + 39)) <= 5, set);
+  assert.strictEqual(A.sunTimes('2026-12-21', 78, 15).polar, 'night');
+});
+
+run('მთვარის ფაზა', () => {
+  // 2026-01-03 — სავსე მთვარე, 2026-01-18 — ახალი მთვარე
+  assert.strictEqual(A.moonPhase(Date.UTC(2026, 0, 3, 10)).key, 'full');
+  assert.strictEqual(A.moonPhase(Date.UTC(2026, 0, 18, 19)).key, 'new');
+});
+
+/* ---------- რჩევები ---------- */
+
+run('შეგრძნებითი ტემპერატურა: ქარი აცივებს', () => {
+  assert.ok(X.feelsLike(5, 70, 8) < X.feelsLike(5, 70, 0));
+  assert.ok(X.feelsLike(30, 80, 1) > 30);
+});
+
+run('რა ჩავიცვა', () => {
+  const hours = [0, 1, 2].map(i => ({ temp: 2 + i, humidity: 80, wind: 2, precipProb: 70, cond: 'rain' }));
+  const a = X.wearAdvice(hours, 1);
+  assert.strictEqual(a.layer, 'cold');
+  assert.ok(a.extras.includes('umbrella'));
+  const hot = X.wearAdvice([{ temp: 31, humidity: 40, wind: 1, precipProb: 0, cond: 'clear' }], 8);
+  assert.strictEqual(hot.layer, 'hot');
+  assert.ok(hot.extras.includes('sunscreen'));
+});
+
+run('გაფრთხილებები: ქარი, ყინვა, თოვლი, ნისლი', () => {
+  const hourly = [{ t: T0, temp: 0, gust: 26, precip: 0.5, cond: 'rain' }];
+  const daily = [{ date: '2026-10-28', tmin: -9, tmax: 2, precip: 3 }];
+  const det = { hourly: [{ t: T0, visibility: 150 }], daily: [{ date: '2026-10-28', snowfall: 12 }] };
+  const types = X.alerts(hourly, daily, det, 10).map(a => a.type + ':' + a.level);
+  ['wind:red', 'ice:orange', 'frost:orange', 'snow:orange', 'fog:orange'].forEach(x => assert.ok(types.includes(x), x + ' in ' + types));
+  assert.strictEqual(X.alerts(hourly, daily, det, 10)[0].level, 'red');
+});
+
+run('საუკეთესო დღე', () => {
+  const days = [
+    { date: 'd0', tmax: 14, precipProb: 90, precip: 8, cond: 'rain', wind: 3 },
+    { date: 'd1', tmax: 24, precipProb: 0, precip: 0, cond: 'clear', wind: 2 },
+    { date: 'd2', tmax: 22, precipProb: 5, precip: 0, cond: 'partly', wind: 3 },
+    { date: 'd3', tmax: 20, precipProb: 10, precip: 0, cond: 'partly', wind: 3 }
+  ];
+  const b = X.bestDays(days);
+  assert.strictEqual(b.picnic.date, 'd1');
+  assert.strictEqual(b.carwash.date, 'd1');
+  assert.strictEqual(X.bestDays([days[0]]).picnic, null);
+});
+
+run('გუშინდელთან შედარება', () => {
+  assert.strictEqual(X.vsYesterday([{ t: T0 - 24 * H, temp: 10 }, { t: T0, temp: 6 }], T0), -4);
+  assert.strictEqual(X.vsYesterday([{ t: T0, temp: 6 }], T0), null);
+});
+
+run('ჰაერი და UV დონეები', () => {
+  assert.strictEqual(X.aqiLevel(15), 'good');
+  assert.strictEqual(X.aqiLevel(65), 'poor');
+  assert.strictEqual(X.uvLevel(7), 'high');
+  assert.strictEqual(X.uvLevel(null), null);
+});
+
+run('გზა და უღელტეხილი', () => {
+  const hours = [{ t: T0, temp: -1, humidity: 95, precip: 0 }];
+  assert.strictEqual(X.roadRisk(hours, null).level, 'danger');
+  assert.strictEqual(X.roadRisk([{ t: T0, temp: 12, wind: 3 }], null).level, 'ok');
+  const place = { elevation: 2379, hourly: [{ t: T0, temp: -6, snowfall: 6, precip: 1, visibility: 3000, gust: 10 }, { t: T0 + H, temp: -7, snowfall: 6, precip: 1, visibility: 3000, gust: 10 }] };
+  assert.strictEqual(X.passStatus(place, T0).level, 'danger');
+});
+
+run('მთა: ტემპერატურა სიმაღლეზე და თოვლის შეჯამება', () => {
+  assert.strictEqual(X.tempAtAltitude(10, 500, 2500), -3);
+  const det = { elevation: 2200, hourly: [
+    { t: T0 - H, snowDepth: 0.4, snowfall: 2, freezing: 1800 },
+    { t: T0 + H, snowDepth: 0.4, snowfall: 5, freezing: 1700 }] };
+  const m = X.mountainSummary(det, T0);
+  assert.ok(Math.abs(m.snowDepth - 40) < 1e-9);
+  assert.strictEqual(m.newSnow24, 5);
+  assert.strictEqual(m.fallen24, 2);
+  assert.strictEqual(m.relevant, true);
+});
+
+/* ---------- დამატებითი მონაცემები ---------- */
+
+run('ისტორია: ნორმა და რეკორდი', () => {
+  const time = [], hi = [], lo = [];
+  for (let y = 1991; y <= 2024; y++) for (const md of ['11-05', '11-06', '11-07']) { time.push(y + '-' + md); hi.push(y === 2010 ? 25 : 14); lo.push(y === 1993 ? -8 : 4); }
+  const h = E.buildHistory({ daily: { time, temperature_2m_max: hi, temperature_2m_min: lo } });
+  assert.deepStrictEqual(h.days['11-06'].recHi, { v: 25, y: 2010 });
+  assert.deepStrictEqual(h.days['11-06'].recLo, { v: -8, y: 1993 });
+  assert.ok(h.days['11-06'].normHi > 14 && h.days['11-06'].normHi < 15);
+  assert.deepStrictEqual(h.years, [1991, 2024]);
+});
+
+run('სიზუსტე: ცდომილება და წონები', () => {
+  const rows = (err) => [...Array(24)].map((_, i) => ({ t: T0 + i * H, actual: 10, forecast: 10 + err * (i % 2 ? 1 : -1) }));
+  const sc = E.scoreAccuracy({ a: rows(1), b: rows(2), c: rows(0.5) }, { yr: rows(1).map(r => ({ t: r.t, forecast: r.forecast })) });
+  assert.strictEqual(sc.c.mae, 0.5);
+  assert.strictEqual(sc.b.mae, 2);
+  assert.strictEqual(sc.yr.mae, 1);
+  const w = E.weightsFrom(sc, ['a', 'b', 'c', 'yr', 'zz']);
+  assert.ok(w.c > w.a && w.a > w.b);
+  assert.strictEqual(w.zz, 1);
+  assert.strictEqual(E.weightsFrom({}, ['a', 'b']), null);
+});
+
+run('რამდენიმე ადგილის პასუხი და ჰაერის ხარისხი', () => {
+  const p = E.parsePlace({ elevation: 2340, hourly: { time: [1, 2], temperature_2m: [-3, -4], snowfall: [0, 1] }, daily: {} });
+  assert.strictEqual(p.elevation, 2340);
+  assert.strictEqual(p.hourly[1].snowfall, 1);
+  assert.strictEqual(p.hourly[1].visibility, null);
+  const air = E.parseAir({ current: { european_aqi: 25, pm2_5: 3.1, uv_index: 0.4 }, hourly: { time: [1], uv_index: [2] } });
+  assert.deepStrictEqual([air.aqi, air.pm25, air.uv, air.hourly[0].uv], [25, 3.1, 0.4, 2]);
+});
+
+/* ---------- ენები და ერთეულები ---------- */
+
+run('სამივე ენას ერთნაირი გასაღებები აქვს', () => {
+  const ka = Object.keys(I.D.ka).sort();
+  ['en', 'ru'].forEach(l => assert.deepStrictEqual(Object.keys(I.D[l]).sort(), ka, l));
+  ['en', 'ru'].forEach(l => assert.deepStrictEqual(Object.keys(I.D[l].cond).sort(), Object.keys(I.D.ka.cond).sort()));
+});
+
+run('ერთეულები: °F, კმ/სთ, 12-საათიანი დრო', () => {
+  I.setPrefs({ lang: 'en', temp: 'f', wind: 'kmh', time: '12' });
+  assert.strictEqual(I.temp(20), '68°');
+  assert.strictEqual(I.tempDelta(5), '9°');
+  assert.strictEqual(I.wind(5), '18 km/h');
+  assert.strictEqual(I.time(Date.UTC(2026, 0, 1, 14), 'Asia/Tbilisi'), '6:00 PM');
+  I.setPrefs({ lang: 'ka', temp: 'c', wind: 'ms', time: '24' });
+  assert.strictEqual(I.temp(20.4), '20°');
+  assert.strictEqual(I.wind(5), '5 მ/წ');
+  assert.strictEqual(I.t('feels', { t: '5°' }), 'შეიგრძნობა როგორც 5°');
 });

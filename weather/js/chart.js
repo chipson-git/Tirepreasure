@@ -32,7 +32,7 @@
     var all = [];
     cfg.series.forEach(function (s) { s.values.forEach(function (v) { if (v != null) all.push(v); }); });
     if (!n || !all.length) {
-      el.innerHTML = '<p class="hint">მონაცემები ჯერ არ არის.</p>';
+      el.innerHTML = '<p class="hint">' + (cfg.empty || '') + '</p>';
       return;
     }
     var ticks = niceTicks(Math.min.apply(null, all), Math.max.apply(null, all));

@@ -254,18 +254,61 @@
 
   /* ---------- საერთო პროგნოზი ---------- */
 
-  function combineCurrent(items) {
-    var list = items.filter(Boolean);
+  /**
+   * შეწონილი მედიანა: pairs — [{v, w}]. თანაბარი წონებით ჩვეულებრივ მედიანას უდრის.
+   * წონა = წყაროს სიზუსტე (უფრო ზუსტ წყაროს მეტი გავლენა აქვს).
+   */
+  function weightedMedian(pairs) {
+    var ps = pairs.filter(function (p) { return typeof p.v === 'number' && isFinite(p.v) && p.w > 0; })
+      .sort(function (a, b) { return a.v - b.v; });
+    if (!ps.length) return null;
+    var total = ps.reduce(function (s, p) { return s + p.w; }, 0);
+    var acc = 0;
+    for (var i = 0; i < ps.length; i++) {
+      acc += ps[i].w;
+      if (Math.abs(acc - total / 2) < 1e-9 && i + 1 < ps.length) return (ps[i].v + ps[i + 1].v) / 2;
+      if (acc > total / 2) return ps[i].v;
+    }
+    return ps[ps.length - 1].v;
+  }
+
+  /** ქარის მიმართულების საშუალო (წრიული — 350° და 10° საშუალოდ 0°-ს იძლევა). */
+  function circularMean(degs) {
+    var v = nums(degs);
+    if (!v.length) return null;
+    var x = 0, y = 0;
+    v.forEach(function (d) { x += Math.cos(d * Math.PI / 180); y += Math.sin(d * Math.PI / 180); });
+    if (Math.abs(x) < 1e-9 && Math.abs(y) < 1e-9) return null;
+    var r = Math.atan2(y, x) * 180 / Math.PI;
+    return (r + 360) % 360;
+  }
+
+  // byId: { id: item } ან უბრალოდ მასივი. weights: { id: წონა } (არასავალდებულო)
+  function entries(byId) {
+    if (Array.isArray(byId)) return byId.map(function (x, i) { return { id: String(i), x: x }; }).filter(function (e) { return e.x; });
+    return Object.keys(byId).filter(function (id) { return byId[id]; }).map(function (id) { return { id: id, x: byId[id] }; });
+  }
+  function wm(list, field, weights) {
+    return weightedMedian(list.map(function (e) {
+      return { v: e.x[field], w: weights && weights[e.id] != null ? weights[e.id] : 1 };
+    }));
+  }
+  function field(list, name) { return list.map(function (e) { return e.x[name]; }); }
+
+  function combineCurrent(byId, weights) {
+    var list = entries(byId);
     if (!list.length) return null;
-    var temps = list.map(function (x) { return x.temp; });
-    var probs = list.map(function (x) { return x.precipProb; });
-    var v = vote(list.map(function (x) { return x.cond; }));
+    var temps = field(list, 'temp');
+    var probs = field(list, 'precipProb');
+    var v = vote(field(list, 'cond'));
     return {
-      temp: median(temps),
+      temp: wm(list, 'temp', weights),
       cond: v.cond,
-      humidity: median(list.map(function (x) { return x.humidity; })),
-      wind: median(list.map(function (x) { return x.wind; })),
-      pressure: median(list.map(function (x) { return x.pressure; })),
+      humidity: median(field(list, 'humidity')),
+      wind: median(field(list, 'wind')),
+      windDir: circularMean(field(list, 'windDir')),
+      gust: median(field(list, 'gust')),
+      pressure: median(field(list, 'pressure')),
       precipProb: mean(probs),
       tempMin: nums(temps).length ? Math.min.apply(null, nums(temps)) : null,
       tempMax: nums(temps).length ? Math.max.apply(null, nums(temps)) : null,
@@ -278,28 +321,32 @@
    * საათობრივი საერთო პროგნოზი: hours — დროის მომენტები (ms),
    * seriesById — { id: [hourlyPoint...] }.
    */
-  function combineHourly(hours, seriesById) {
+  function combineHourly(hours, seriesById, weights) {
     var ids = Object.keys(seriesById);
     return hours.map(function (t) {
       var by = {};
       ids.forEach(function (id) {
         var s = seriesById[id];
         if (!s || !s.length) return;
-        // სამსაათიან სერიებს (OpenWeatherMap) უფრო დიდი ფანჯარა სჭირდება
+        // ნაკლებად ხშირი (მაგ. სამსაათიანი) სერიებს უფრო დიდი ფანჯარა სჭირდება
         var step = s.length > 1 ? s[1].t - s[0].t : HOUR;
         var p = pointAt(s, t, Math.max(HOUR, step) / 2 + 1);
         if (p) by[id] = p;
       });
-      var ps = Object.keys(by).map(function (id) { return by[id]; });
-      var temps = ps.map(function (p) { return p.temp; });
-      var probs = ps.map(function (p) { return p.precipProb; });
-      var v = vote(ps.map(function (p) { return p.cond; }));
+      var list = entries(by);
+      var temps = field(list, 'temp');
+      var probs = field(list, 'precipProb');
+      var v = vote(field(list, 'cond'));
       return {
         t: t,
-        temp: median(temps),
+        temp: wm(list, 'temp', weights),
         cond: v.cond,
         precipProb: mean(probs),
-        wind: median(ps.map(function (p) { return p.wind; })),
+        precip: median(field(list, 'precip')),
+        wind: median(field(list, 'wind')),
+        windDir: circularMean(field(list, 'windDir')),
+        gust: median(field(list, 'gust')),
+        humidity: median(field(list, 'humidity')),
         bySource: by,
         sources: nums(temps).length,
         agreement: agreement(spread(temps), v.share, nums(probs).length > 1 ? spread(probs) : null, nums(temps).length)
@@ -308,7 +355,7 @@
   }
 
   /** დღიური საერთო პროგნოზი: dailyById — { id: [dailyPoint...] } */
-  function combineDaily(dates, dailyById) {
+  function combineDaily(dates, dailyById, weights) {
     var ids = Object.keys(dailyById);
     return dates.map(function (date) {
       var by = {};
@@ -316,20 +363,20 @@
         var d = (dailyById[id] || []).filter(function (x) { return x.date === date; })[0];
         if (d) by[id] = d;
       });
-      var ds = Object.keys(by).map(function (id) { return by[id]; });
-      var tmaxs = ds.map(function (d) { return d.tmax; });
-      var tmins = ds.map(function (d) { return d.tmin; });
-      var probs = ds.map(function (d) { return d.precipProb; });
-      var v = vote(ds.map(function (d) { return d.cond; }));
+      var list = entries(by);
+      var tmaxs = field(list, 'tmax');
+      var tmins = field(list, 'tmin');
+      var probs = field(list, 'precipProb');
+      var v = vote(field(list, 'cond'));
       var n = Math.max(nums(tmaxs).length, nums(tmins).length);
       return {
         date: date,
-        tmax: median(tmaxs),
-        tmin: median(tmins),
+        tmax: wm(list, 'tmax', weights),
+        tmin: wm(list, 'tmin', weights),
         cond: v.cond,
         precipProb: mean(probs),
-        precip: median(ds.map(function (d) { return d.precip; })),
-        wind: median(ds.map(function (d) { return d.wind; })),
+        precip: median(field(list, 'precip')),
+        wind: median(field(list, 'wind')),
         bySource: by,
         sources: n,
         agreement: agreement(Math.max(spread(tmaxs), spread(tmins)), v.share,
@@ -344,7 +391,7 @@
     COND_BY_INDEX: COND_BY_INDEX,
     fromYr: fromYr, fromWmo: fromWmo, fromOwm: fromOwm, fromAccu: fromAccu, fromTwc: fromTwc,
     dateKey: dateKey, localHour: localHour,
-    median: median, mean: mean, spread: spread, vote: vote,
+    median: median, mean: mean, spread: spread, vote: vote, weightedMedian: weightedMedian, circularMean: circularMean,
     dailyCond: dailyCond, aggregateDaily: aggregateDaily, pointAt: pointAt,
     agreement: agreement,
     combineCurrent: combineCurrent, combineHourly: combineHourly, combineDaily: combineDaily

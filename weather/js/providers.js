@@ -15,6 +15,8 @@
   var HOUR = W.HOUR;
 
   function num(v) { return typeof v === 'number' && isFinite(v) ? v : null; }
+  // მასივის i-ური ელემენტი; თუ ველი პასუხში არ არის — null (ზოგ მოდელს ზოგი ცვლადი არ აქვს)
+  function at(arr, i) { return arr ? num(arr[i]) : null; }
   function round4(x) { return Math.round(x * 1e4) / 1e4; }
 
   /* ---------------- yr.no (MET Norway) ---------------- */
@@ -42,6 +44,8 @@
         precipProb: next.details ? num(next.details.probability_of_precipitation) : null,
         precip: precip,
         wind: num(inst.wind_speed),
+        windDir: num(inst.wind_from_direction),
+        gust: num(inst.wind_speed_of_gust),
         humidity: num(inst.relative_humidity),
         pressure: num(inst.air_pressure_at_sea_level)
       };
@@ -51,11 +55,12 @@
     var cur = W.pointAt(all, now, 1.5 * HOUR);
     return {
       current: cur ? {
-        temp: cur.temp, cond: cur.cond, humidity: cur.humidity, wind: cur.wind,
-        pressure: cur.pressure, precipProb: cur.precipProb
+        temp: cur.temp, cond: cur.cond, humidity: cur.humidity, wind: cur.wind, windDir: cur.windDir,
+        gust: cur.gust, pressure: cur.pressure, precipProb: cur.precipProb
       } : null,
       hourly: hourly,
-      daily: W.aggregateDaily(all, tz)
+      // ბოლო დღეებში yr 6-საათიანია; არასრული დღე (<4 წერტილი) მინ/მაქსს ამახინჯებს — ვტოვებთ მხოლოდ დღევანდელს
+      daily: W.aggregateDaily(all, tz).filter(function (d, i) { return i === 0 || d.samples >= 4; })
     };
   }
 
@@ -67,21 +72,26 @@
 
   /* ---------------- Open-Meteo ---------------- */
 
-  var OM_HOURLY = 'temperature_2m,weather_code,precipitation_probability,precipitation,wind_speed_10m';
+  var OM_HOURLY = 'temperature_2m,weather_code,precipitation_probability,precipitation,wind_speed_10m,' +
+    'wind_direction_10m,wind_gusts_10m,relative_humidity_2m';
   var OM_DAILY = 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,' +
     'precipitation_probability_max,wind_speed_10m_max';
-  var OM_CURRENT = 'temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,pressure_msl';
+  var OM_CURRENT = 'temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,' +
+    'wind_gusts_10m,pressure_msl';
 
   function parseOpenMeteo(json, now) {
     var h = json.hourly || {}, d = json.daily || {}, c = json.current;
     var hourly = (h.time || []).map(function (sec, i) {
       return {
         t: sec * 1000,
-        temp: num(h.temperature_2m[i]),
-        cond: W.fromWmo(h.weather_code[i]),
-        precipProb: num(h.precipitation_probability[i]),
-        precip: num(h.precipitation[i]),
-        wind: num(h.wind_speed_10m[i])
+        temp: at(h.temperature_2m, i),
+        cond: W.fromWmo(at(h.weather_code, i)),
+        precipProb: at(h.precipitation_probability, i),
+        precip: at(h.precipitation, i),
+        wind: at(h.wind_speed_10m, i),
+        windDir: at(h.wind_direction_10m, i),
+        gust: at(h.wind_gusts_10m, i),
+        humidity: at(h.relative_humidity_2m, i)
       };
     }).filter(function (p) { return p.temp != null; });
     // timezone=auto: დღიური დრო = ადგილობრივი შუაღამე. utc_offset-ით ვიღებთ თარიღს.
@@ -89,12 +99,12 @@
     var daily = (d.time || []).map(function (sec, i) {
       return {
         date: new Date(sec * 1000 + off).toISOString().slice(0, 10),
-        tmin: num(d.temperature_2m_min[i]),
-        tmax: num(d.temperature_2m_max[i]),
-        cond: W.fromWmo(d.weather_code[i]),
-        precipProb: num(d.precipitation_probability_max[i]),
-        precip: num(d.precipitation_sum[i]),
-        wind: num(d.wind_speed_10m_max[i])
+        tmin: at(d.temperature_2m_min, i),
+        tmax: at(d.temperature_2m_max, i),
+        cond: W.fromWmo(at(d.weather_code, i)),
+        precipProb: at(d.precipitation_probability_max, i),
+        precip: at(d.precipitation_sum, i),
+        wind: at(d.wind_speed_10m_max, i)
       };
     }).filter(function (d) { return d.tmax != null || d.tmin != null; });
     var near = W.pointAt(hourly.filter(function (p) { return p.temp != null; }), now, 3 * HOUR);
@@ -102,11 +112,13 @@
     if (c && num(c.temperature_2m) != null) {
       cur = {
         temp: num(c.temperature_2m), cond: W.fromWmo(c.weather_code), humidity: num(c.relative_humidity_2m),
-        wind: num(c.wind_speed_10m), pressure: num(c.pressure_msl), precipProb: near ? near.precipProb : null
+        wind: num(c.wind_speed_10m), windDir: num(c.wind_direction_10m), gust: num(c.wind_gusts_10m),
+        pressure: num(c.pressure_msl), precipProb: near ? near.precipProb : null
       };
     } else if (near) {
       // ზოგ მოდელს „ახლანდელი“ მნიშვნელობა არ აქვს — ვიღებთ უახლოეს საათს
-      cur = { temp: near.temp, cond: near.cond, humidity: null, wind: near.wind, pressure: null, precipProb: near.precipProb };
+      cur = { temp: near.temp, cond: near.cond, humidity: near.humidity, wind: near.wind, windDir: near.windDir,
+        gust: near.gust, pressure: null, precipProb: near.precipProb };
     }
     return {
       current: cur,
