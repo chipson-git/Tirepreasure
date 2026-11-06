@@ -163,10 +163,6 @@ td input:focus { border-color: var(--accent); outline: none; }
 .status { padding: 10px 12px; border-radius: 8px; font-size: .88rem; }
 .status.ok { background: var(--good-soft); color: var(--good); }
 .status.err { background: var(--bad-soft); color: var(--bad); }
-.dropzone { border: 2px dashed var(--line); border-radius: 10px; padding: 20px; text-align: center; display: grid; gap: 8px; justify-items: center; }
-.dropzone.over { border-color: var(--accent); background: var(--accent-soft); }
-.map-list { display: grid; gap: 2px; font-size: .84rem; max-height: 280px; overflow: auto; }
-.map-list div { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px dotted var(--line); padding: 2px 0; }
 
 /* lab */
 .lab { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 18px; align-items: start; }
@@ -236,7 +232,7 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
     </div>
     <nav class="tabs" id="tabs" aria-label="Sections">
       <a href="#ratios" data-view="ratios">Ratios</a>
-      <a href="#data" data-view="data">Data &amp; Excel import</a>
+      <a href="#data" data-view="data">Financial data</a>
       <a href="#lab" data-view="lab">Transaction lab</a>
       <a href="#cards" data-view="cards">Flashcards</a>
       <a href="#quiz" data-view="quiz">Quiz</a>
@@ -295,7 +291,7 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
     <div class="view-head">
       <div>
         <h2>Financial statements</h2>
-        <p>Type over any figure, or import your Excel file. All amounts are in thousands except shares (thousands) and share price (dollars). Your edits are saved in this browser.</p>
+        <p>Type over any figure and every ratio, chart and quiz question updates. All amounts are in thousands except shares (thousands) and share price (dollars). Your edits are saved in this browser.</p>
       </div>
       <div class="row">
         <button class="btn" type="button" id="resetSample">Load sample company</button>
@@ -315,23 +311,7 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
           <span class="eyebrow">Statement check</span>
           <div id="balanceCheck"></div>
         </div>
-        <div class="panel" style="display:grid;gap:12px">
-          <span class="eyebrow">Import from Excel or CSV</span>
-          <div class="dropzone" id="dropzone">
-            <strong>Drop your .xlsx, .xls or .csv file here</strong>
-            <span class="small muted">The importer reads every sheet, looks for line-item names in the first text column (for example "Net sales", "Accounts receivable", "Long-term debt") and takes the last two numeric columns as prior year and current year.</span>
-            <label class="btn primary" for="fileInput">Choose file</label>
-            <input type="file" id="fileInput" accept=".xlsx,.xls,.xlsm,.csv" hidden>
-          </div>
-          <label class="inline" for="swapYears"><input type="checkbox" id="swapYears"> My file lists the current year first (left column)</label>
-          <div id="importReport"></div>
-          <button class="btn" type="button" id="copyTemplate">Copy blank template (CSV)</button>
-        </div>
       </div>
-    </div>
-    <div class="panel" id="rawSheetPanel" hidden>
-      <span class="eyebrow">Your file as imported</span>
-      <div class="tbl-wrap" id="rawSheet" style="max-height:420px;margin-top:8px"></div>
     </div>
   </section>
 
@@ -439,7 +419,6 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
 <div class="overlay" id="overlay" hidden><aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle"></aside></div>
 <div class="toast" id="toast" hidden></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 "use strict";
 /* ---------- storage helpers ---------- */
@@ -927,117 +906,7 @@ function renderCompany() {
   $("#companyLine").innerHTML = `<b>${esc(state.company)}</b> · ${esc(state.y1Label)} → ${esc(state.y2Label)}`;
 }
 
-/* Excel import */
-const SYN = [
-  ["cogs", /cost of (goods sold|sales|revenue|merchandise)|\bcogs\b/],
-  ["prefDiv", /preferred dividend|preference dividend/],
-  ["comDiv", /common dividend|dividends? (paid|declared)|^dividends?$|cash dividends/],
-  ["sales", /^(total |net )?(sales|revenues?|turnover)|net sales|total revenue|sales revenue/],
-  ["opex", /operating expenses|sg&a|selling.*admin|general and admin|administrative expenses|other operating/],
-  ["dep", /depreciation|amortization|amortisation/],
-  ["interest", /interest expense|finance costs?|^interest$/],
-  ["lease", /lease|rent expense|^rent/],
-  ["tax", /income tax|tax expense|^taxes?$|provision for tax/],
-  ["sec", /marketable|short[- ]term investments|trading securities/],
-  ["cash", /^cash( and (cash )?equivalents)?$|^cash &|cash and equivalents/],
-  ["ar", /receivable/],
-  ["inv", /inventor|^stock$/],
-  ["prepaid", /prepaid|other current assets/],
-  ["ppe", /property|plant|\bppe\b|pp&e|fixed assets/],
-  ["otherA", /other (non[- ]?current|long[- ]term) assets|intangible|goodwill/],
-  ["ap", /accounts payable|trade payables?|^payables$|trade creditors/],
-  ["accrued", /accrued|other current liabilities/],
-  ["std", /short[- ]term (debt|borrowings|loans)|notes payable|current portion|bank overdraft/],
-  ["ltd", /long[- ]term (debt|borrowings|loans)|bonds payable|non[- ]current borrowings|long[- ]term notes/],
-  ["otherL", /other (non[- ]?current|long[- ]term) liabilities|deferred tax liab/],
-  ["prefEq", /preferred (stock|shares|equity)|preference shares/],
-  ["comEq", /(common|ordinary)?\s*(shareholders'?|stockholders'?|owners'?) equity|common equity|total equity/],
-  ["cfo", /cash (flows? )?(from|provided by|generated (from|by)) operat|operating cash flow|net cash from operating/],
-  ["capex", /capital expenditures?|capex|purchases? of (property|ppe|pp&e|fixed assets)/],
-  ["shares", /shares outstanding|weighted average (number of )?(common )?shares|number of shares|^shares$/],
-  ["price", /share price|market price|stock price|price per share/]
-];
-const EXCLUDE = /before tax|pre-?tax|gross profit|operating income|operating profit|net income|cash flow statement|total current|total assets|total liabilities(?! and)|ratio|turnover ratio|per share(?!.*price)/;
-function cellNum(v) {
-  if (typeof v === "number") return v;
-  if (typeof v !== "string") return null;
-  let s = v.trim(); if (!s) return null;
-  const neg = /^\(.*\)$/.test(s); s = s.replace(/[()$€£,\s]/g, "");
-  if (!/^-?\d*\.?\d+$/.test(s)) return null;
-  return neg ? -(+s) : +s;
-}
-function handleRows(allRows) {
-  const found = {}, unmatched = [];
-  allRows.forEach(row => {
-    const li = row.findIndex(c => typeof c === "string" && /[a-z]/i.test(c) && cellNum(c) === null);
-    if (li < 0) return;
-    const label = String(row[li]).toLowerCase().replace(/\s+/g, " ").trim();
-    const nums = row.slice(li + 1).map(cellNum).filter(v => v !== null);
-    if (!nums.length) return;
-    if (EXCLUDE.test(label) && !/total equity/.test(label)) { unmatched.push(row[li]); return; }
-    const hit = SYN.find(([k, re]) => re.test(label) && !(k === "sales" && /cost/.test(label)) && !(k === "cash" && /flow/.test(label)));
-    if (!hit) { unmatched.push(row[li]); return; }
-    const k = hit[0]; if (found[k]) return;
-    let y1v, y2v;
-    if (nums.length === 1) { y1v = null; y2v = nums[0]; }
-    else { const a = nums[nums.length - 2], b = nums[nums.length - 1]; [y1v, y2v] = $("#swapYears").checked ? [b, a] : [a, b]; }
-    if (k === "capex") { y1v = y1v == null ? null : Math.abs(y1v); y2v = Math.abs(y2v); }
-    if (["cogs", "opex", "dep", "interest", "tax", "lease", "comDiv", "prefDiv"].includes(k)) { y1v = y1v == null ? null : Math.abs(y1v); y2v = Math.abs(y2v); }
-    found[k] = { label: row[li], y1: y1v, y2: y2v };
-  });
-  const keys = Object.keys(found);
-  if (!keys.length) {
-    $("#importReport").innerHTML = `<div class="status err">No recognizable line items were found. Check that the first text column holds names like "Net sales" or "Inventory" with numbers to the right. Your file is shown below so you can still read it.</div>`;
-    return;
-  }
-  keys.forEach(k => { if (found[k].y1 != null) state.y1[k] = found[k].y1; state.y2[k] = found[k].y2; });
-  save(); refreshAll(true);
-  const missing = KEYS.filter(k => !found[k]);
-  $("#importReport").innerHTML = `<div class="status ok">Imported ${keys.length} of ${KEYS.length} line items. Missing items keep their previous values; edit them in the table.</div>
-    <div class="map-list" style="margin-top:8px">${keys.map(k => `<div><span>${esc(found[k].label)}</span><span class="muted">→ ${esc(LABEL[k])}</span></div>`).join("")}</div>
-    ${missing.length ? `<p class="small muted" style="margin-top:8px">Not found: ${missing.map(k => esc(LABEL[k])).join(", ")}.</p>` : ""}
-    ${unmatched.length ? `<p class="small muted" style="margin-top:4px">Skipped rows: ${unmatched.slice(0, 20).map(esc).join(", ")}${unmatched.length > 20 ? "…" : ""}</p>` : ""}`;
-}
-function showRaw(sheets) {
-  $("#rawSheetPanel").hidden = false;
-  $("#rawSheet").innerHTML = sheets.map(({ name, rows }) => `<p class="eyebrow" style="margin:10px 0 4px">${esc(name)}</p><table>${rows.slice(0, 200).map(r => `<tr>${r.map(c => `<td${typeof c === "number" ? ' class="n num"' : ""}>${esc(typeof c === "number" ? n(c) : c ?? "")}</td>`).join("")}</tr>`).join("")}</table>`).join("");
-}
-function readFile(file) {
-  const fr = new FileReader();
-  fr.onload = e => {
-    try {
-      let sheets = [];
-      if (typeof XLSX !== "undefined") {
-        const wb = XLSX.read(new Uint8Array(e.target.result), { type: "array" });
-        sheets = wb.SheetNames.map(nm => ({ name: nm, rows: XLSX.utils.sheet_to_json(wb.Sheets[nm], { header: 1, raw: true, defval: "" }) }));
-      } else if (/\.csv$/i.test(file.name)) {
-        const txt = new TextDecoder().decode(e.target.result);
-        sheets = [{ name: file.name, rows: txt.split(/\r?\n/).map(l => l.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(c => c.replace(/^"|"$/g, ""))) }];
-      } else throw new Error("The Excel reader did not load. Save the file as CSV and try again.");
-      showRaw(sheets);
-      handleRows(sheets.flatMap(s => s.rows));
-      const firstName = file.name.replace(/\.[^.]+$/, "");
-      if (state.company.includes("(sample)")) { state.company = firstName; save(); renderCompany(); $("#companyName").value = firstName; }
-    } catch (err) {
-      $("#importReport").innerHTML = `<div class="status err">Could not read ${esc(file.name)}: ${esc(err.message)}</div>`;
-    }
-  };
-  fr.readAsArrayBuffer(file);
-}
-$("#fileInput").addEventListener("change", e => { if (e.target.files[0]) readFile(e.target.files[0]); e.target.value = ""; });
-const dz = $("#dropzone");
-["dragenter", "dragover"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add("over"); }));
-["dragleave", "drop"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove("over"); }));
-dz.addEventListener("drop", e => { const f = e.dataTransfer.files[0]; if (f) readFile(f); });
-$("#copyTemplate").addEventListener("click", () => {
-  const csv = ["Line item,Prior year,Current year", ...KEYS.map(k => `"${LABEL[k]}",,`)].join("\n");
-  const done = () => toast("Template copied. Paste it into Excel, fill it in, save as .xlsx or .csv, then import.");
-  if (navigator.clipboard) navigator.clipboard.writeText(csv).then(done, () => fallbackCopy(csv, done)); else fallbackCopy(csv, done);
-});
-function fallbackCopy(text, done) {
-  const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select();
-  try { document.execCommand("copy"); done(); } catch (e) { toast("Copy failed. Select the text manually."); } ta.remove();
-}
+
 
 /* ---------- TRANSACTION LAB ---------- */
 const TXNS = [
