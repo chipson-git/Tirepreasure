@@ -145,9 +145,7 @@ label.inline { display: inline-flex; gap: 6px; align-items: center; font-size: .
 .yr { flex: 1 1 120px; border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
 .yr .v { font-family: var(--f-mono); font-size: 1.3rem; }
 
-/* data tab */
-.data-layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 18px; align-items: start; }
-@media (max-width: 900px) { .data-layout { grid-template-columns: minmax(0, 1fr); } }
+/* tables */
 .tbl-wrap { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; font-size: .9rem; }
 th, td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
@@ -156,31 +154,6 @@ td.n, th.n { text-align: right; }
 tr.grp td { background: var(--paper); font-weight: 600; font-size: .8rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
 tr.tot td { font-weight: 600; }
 tr.tot td.n { font-family: var(--f-mono); }
-td input { width: 110px; text-align: right; border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; background: var(--surface); font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
-td input:focus { border-color: var(--accent); outline: none; }
-.status { padding: 10px 12px; border-radius: 8px; font-size: .88rem; }
-.status.ok { background: var(--good-soft); color: var(--good); }
-.status.err { background: var(--bad-soft); color: var(--bad); }
-
-/* lab */
-.lab { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 18px; align-items: start; }
-@media (max-width: 900px) { .lab { grid-template-columns: minmax(0, 1fr); } }
-.txn-list { display: grid; gap: 4px; max-height: 520px; overflow-y: auto; }
-.txn { text-align: left; border: 1px solid transparent; background: transparent; padding: 8px 10px; border-radius: 8px; }
-.txn:hover { background: var(--paper); }
-.txn[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
-.txn .e { display: block; font-family: var(--f-mono); font-size: .74rem; color: var(--muted); }
-.dir { font-family: var(--f-mono); font-weight: 600; padding: 2px 9px; border-radius: 999px; font-size: .8rem; white-space: nowrap; }
-.dir.up { background: var(--good-soft); color: var(--good); }
-.dir.down { background: var(--bad-soft); color: var(--bad); }
-.dir.same { background: var(--paper); color: var(--muted); }
-.guess { display: inline-flex; gap: 4px; }
-.guess button { border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 2px 9px; font-family: var(--f-mono); font-size: .8rem; }
-.verdict { font-size: .78rem; font-weight: 600; }
-.verdict.r { color: var(--good); }
-.verdict.w { color: var(--bad); }
-input[type="range"] { accent-color: var(--accent); width: 100%; }
-.amt { display: grid; gap: 6px; }
 
 /* flashcards */
 .fc-stage { display: grid; justify-items: center; gap: 14px; }
@@ -234,8 +207,6 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
     </div>
     <nav class="tabs" id="tabs" aria-label="Sections">
       <a href="#ratios" data-view="ratios">Ratios</a>
-      <a href="#data" data-view="data">Financial data</a>
-      <a href="#lab" data-view="lab">Transaction lab</a>
       <a href="#cards" data-view="cards">Flashcards</a>
       <a href="#quiz" data-view="quiz">Quiz</a>
       <a href="#sheet" data-view="sheet">Cheat sheet</a>
@@ -249,7 +220,7 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
     <div class="view-head">
       <div>
         <h2>Financial ratios</h2>
-        <p>The 26 ratios from Gleim CIA Challenge Study Unit 10, calculated from the statements on the Financial data tab. Click any card for the formula with the numbers plugged in, what it means, and the exam trap to watch for.</p>
+        <p>The 26 ratios from Gleim CIA Challenge Study Unit 10, calculated from the book's example company (Examples 10-4 and 10-5). Click any card for the formula with the numbers plugged in, what it means, and the exam trap to watch for.</p>
       </div>
       <div class="row">
         <div class="toggle" role="group" aria-label="Balance basis">
@@ -287,64 +258,6 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
     <div id="ratioGrid" style="display:grid;gap:28px"></div>
   </section>
 
-  <!-- DATA -->
-  <section class="view" id="view-data" hidden>
-    <div class="view-head">
-      <div>
-        <h2>Financial statements</h2>
-        <p>Type over any figure and every ratio, chart and quiz question updates. All amounts are in dollars. The sample is the company from the book's Examples 10-4 and 10-5; its dividends, share count and share price are assumed. Your edits are saved in this browser.</p>
-      </div>
-      <div class="row">
-        <button class="btn" type="button" id="resetSample">Load sample company</button>
-        <button class="btn" type="button" id="clearAll">Clear all figures</button>
-      </div>
-    </div>
-    <div class="data-layout">
-      <div class="panel">
-        <div class="row" style="justify-content:space-between;margin-bottom:10px">
-          <label class="inline" for="companyName">Company <input id="companyName" type="text" style="border:1px solid var(--line);border-radius:6px;padding:4px 8px;background:var(--surface);min-width:0;width:220px"></label>
-          <label class="inline" for="yearLabels">Years <input id="y1Label" type="text" aria-label="Prior year label" style="width:70px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--surface)"> → <input id="y2Label" type="text" aria-label="Current year label" style="width:70px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--surface)"></label>
-        </div>
-        <div class="tbl-wrap"><table id="dataTable"></table></div>
-      </div>
-      <div style="display:grid;gap:18px">
-        <div class="panel" style="display:grid;gap:12px">
-          <span class="eyebrow">Statement check</span>
-          <div id="balanceCheck"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- LAB -->
-  <section class="view" id="view-lab" hidden>
-    <div class="view-head">
-      <div>
-        <h2>Transaction lab</h2>
-        <p>The CIA exam loves "what happens to the current ratio if…" questions. Pick a transaction and see how each ratio moves, using current-year ending balances. Turn on guess mode to test yourself before the answer is shown.</p>
-      </div>
-      <label class="inline" for="guessMode"><input type="checkbox" id="guessMode"> Guess mode</label>
-    </div>
-    <div class="lab">
-      <div class="panel" style="display:grid;gap:12px">
-        <div class="amt">
-          <label for="txnAmt" class="eyebrow">Transaction amount ($)</label>
-          <div class="row"><input type="range" id="txnAmt" min="1000" max="200000" step="1000" value="10000" style="flex:1"><span class="num" id="txnAmtOut" style="min-width:70px;text-align:right">10,000</span></div>
-        </div>
-        <div class="txn-list" id="txnList"></div>
-      </div>
-      <div class="panel" style="display:grid;gap:14px">
-        <div>
-          <span class="eyebrow">Journal entry</span>
-          <h3 id="txnTitle"></h3>
-          <div class="steps" id="txnEntry" style="margin-top:8px"></div>
-        </div>
-        <div class="tbl-wrap"><table id="labTable"></table></div>
-        <div class="tipbox" id="txnNote"></div>
-      </div>
-    </div>
-  </section>
-
   <!-- FLASHCARDS -->
   <section class="view" id="view-cards" hidden>
     <div class="view-head">
@@ -379,7 +292,7 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
     <div class="view-head">
       <div>
         <h2>CIA-style practice quiz</h2>
-        <p>Rounds of 10 questions. Concept questions, calculation questions built from the current statements (so they change when your data changes), and transaction-effect questions.</p>
+        <p>Rounds of 10 questions. Concept questions, calculation questions built from the example company with fresh answer choices each round, and transaction-effect questions.</p>
       </div>
       <div class="row">
         <select id="qCat" class="btn" aria-label="Quiz topic"></select>
@@ -475,9 +388,9 @@ const SAMPLE = {
         cfo: 382000, prefDiv: 0, totalDiv: 22000, shares: 500000, price: 1.2 }
 };
 
-let state = store.get("data-su10", null) || JSON.parse(JSON.stringify(SAMPLE));
+const state = JSON.parse(JSON.stringify(SAMPLE));
 let settings = Object.assign({ avg: true, days: 365 }, store.get("settings", {}));
-function save() { store.set("data-su10", state); store.set("settings", settings); }
+function save() { store.set("settings", settings); }
 
 /* ---------- derived figures ---------- */
 function derive(r, prev) {
@@ -779,58 +692,6 @@ function syncToggles() {
 [["#basisAvg", () => settings.avg = true], ["#basisEnd", () => settings.avg = false], ["#days365", () => settings.days = 365], ["#days360", () => settings.days = 360]]
   .forEach(([s, f]) => $(s).addEventListener("click", () => { f(); save(); refreshAll(); }));
 
-/* ---------- DATA tab ---------- */
-const TOTALS_AFTER = {
-  tax: [["Gross profit", "gp"], ["Operating income", "opInc"], ["Earnings before interest & taxes (EBIT)", "ebit"], ["Income before taxes", "ebt"], ["Net income", "ni"]],
-  prepaid: [["Total current assets", "ca"]], otherNCA: [["Total assets", "ta"]], otherCL: [["Total current liabilities", "cl"]],
-  ncl: [["Total liabilities", "tl"]], comEq: [["Total stockholders' equity", "eq"], ["Total liabilities & equity", null]],
-  price: [["Total purchases (COGS + ending inv. − beginning inv.)", "purchases"], ["Earnings per share ($)", "eps"]]
-};
-function renderDataTable() {
-  const rows = [`<thead><tr><th>Line item</th><th class="n">${esc(state.y1Label)}</th><th class="n">${esc(state.y2Label)}</th></tr></thead><tbody>`];
-  FIELDS.forEach(g => {
-    rows.push(`<tr class="grp"><td colspan="3">${esc(g.group)}</td></tr>`);
-    g.items.forEach(([k, lbl]) => {
-      rows.push(`<tr><td><label for="in-y1-${k}">${esc(lbl)}</label></td>
-        <td class="n"><input id="in-y1-${k}" data-y="y1" data-k="${k}" inputmode="decimal" value="${state.y1[k] ?? ""}"></td>
-        <td class="n">${g.openOnly ? '<span class="muted">–</span>' : `<input id="in-y2-${k}" data-y="y2" data-k="${k}" inputmode="decimal" value="${state.y2[k] ?? ""}" aria-label="${esc(lbl)} ${esc(state.y2Label)}">`}</td></tr>`);
-      (TOTALS_AFTER[k] || []).forEach(([t, dk]) => rows.push(`<tr class="tot"><td>${t}</td><td class="n" data-tot="${dk || "tle"}" data-y="1"></td><td class="n" data-tot="${dk || "tle"}" data-y="2"></td></tr>`));
-    });
-  });
-  rows.push("</tbody>");
-  $("#dataTable").innerHTML = rows.join("");
-  updateTotals();
-}
-function updateTotals() {
-  document.querySelectorAll("[data-tot]").forEach(td => {
-    const d = td.dataset.y === "1" ? D1 : D2, k = td.dataset.tot;
-    td.textContent = k === "eps" ? fmt(d.eps, "ps") : n(k === "tle" ? d.tl + d.eq : d[k]);
-  });
-  const bad = [[state.y1Label, D1], [state.y2Label, D2]].filter(([, d]) => Math.abs(d.imbalance) > 0.5);
-  $("#balanceCheck").innerHTML = bad.length
-    ? bad.map(([y, d]) => `<div class="status err">${esc(y)}: total assets (${n(d.ta)}) do not equal liabilities + equity (${n(d.tl + d.eq)}). Difference ${n(d.imbalance)}. Ratios still calculate, but check the balance sheet.</div>`).join("")
-    : `<div class="status ok">Both balance sheets balance: assets = liabilities + equity.</div>`;
-  $("#balanceCheck").insertAdjacentHTML("beforeend", `<p class="small muted">Net income ${esc(state.y2Label)}: <span class="num">${n(D2.ni)}</span> · EPS <span class="num">${fmt(D2.eps, "ps")}</span> · tax rate <span class="num">${fmt(D2.tax / D2.ebt, "%")}</span></p>`);
-}
-$("#dataTable").addEventListener("input", e => {
-  const i = e.target; if (!i.dataset.k) return;
-  const v = i.value.replace(/[,\s$]/g, "");
-  state[i.dataset.y][i.dataset.k] = v === "" || v === "-" ? 0 : (isFinite(+v) ? +v : state[i.dataset.y][i.dataset.k]);
-  save(); recompute(); updateTotals(); renderCompany();
-});
-$("#dataTable").addEventListener("change", () => refreshAll(true));
-["companyName", "y1Label", "y2Label"].forEach(id => $("#" + id).addEventListener("input", e => {
-  const key = id === "companyName" ? "company" : id; state[key] = e.target.value; save(); renderCompany();
-}));
-["companyName", "y1Label", "y2Label"].forEach(id => $("#" + id).addEventListener("change", () => refreshAll(true)));
-$("#resetSample").addEventListener("click", () => { state = JSON.parse(JSON.stringify(SAMPLE)); save(); refreshAll(); toast("Sample company loaded"); });
-let clearArmed = false;
-$("#clearAll").addEventListener("click", e => {
-  if (!clearArmed) { clearArmed = true; e.target.textContent = "Click again to clear"; setTimeout(() => { clearArmed = false; e.target.textContent = "Clear all figures"; }, 3000); return; }
-  clearArmed = false; e.target.textContent = "Clear all figures";
-  state = { company: "My company", y1Label: "Prior year", y2Label: "Current year", y1: Object.fromEntries(KEYS.map(k => [k, 0])), y2: Object.fromEntries(KEYS.map(k => [k, 0])) };
-  save(); refreshAll(); toast("All figures cleared");
-});
 function renderCompany() {
   $("#companyLine").innerHTML = `<b>${esc(state.company)}</b> · ${esc(state.y1Label)} → ${esc(state.y2Label)}`;
 }
@@ -863,33 +724,12 @@ const LAB_RATIOS = [
   ["NWC ratio", d => d.nwc / d.ta, "x"], ["Debt ratio", d => d.tl / d.ta, "x"], ["Debt-to-equity", d => d.tl / d.eq, "x"],
   ["EPS", d => d.eps, "ps"], ["Book value per common share", d => d.bvps, "ps"]
 ];
-let labTxn = "pay_ap", guesses = {};
 function labResult(txnId, X) {
   const base = JSON.parse(JSON.stringify(state.y2)), after = JSON.parse(JSON.stringify(state.y2));
   TXNS.find(t => t.id === txnId).f(after, X);
   const d0 = derive(base, state.y1), d1 = derive(after, state.y1);
   return LAB_RATIOS.map(([name, f, unit]) => { const a = f(d0), b = f(d1), diff = b - a; const dir = Math.abs(diff) < 1e-9 ? "same" : diff > 0 ? "up" : "down"; return { name, a, b, unit, dir }; });
 }
-function renderLab() {
-  const X = +$("#txnAmt").value; $("#txnAmtOut").textContent = nf0.format(X);
-  $("#txnList").innerHTML = TXNS.map(t => `<button class="txn" type="button" data-txn="${t.id}" aria-pressed="${t.id === labTxn}">${esc(t.name)}<span class="e">${esc(t.je.join(" · "))}</span></button>`).join("");
-  const t = TXNS.find(t => t.id === labTxn);
-  $("#txnTitle").textContent = t.name;
-  $("#txnEntry").innerHTML = t.je.map(l => `<div>${l.startsWith("Cr") ? "    " : ""}${esc(l)}${t.id === "writeoff" ? "" : `   ${nf0.format(l.includes("1.25") ? X * 1.25 : X)}`}</div>`).join("");
-  const res = labResult(labTxn, X), gm = $("#guessMode").checked;
-  const arrow = d => ({ up: "▲ up", down: "▼ down", same: "= no change" }[d]);
-  $("#labTable").innerHTML = `<thead><tr><th>Ratio</th><th class="n">Before</th><th class="n">After</th><th>Effect</th></tr></thead><tbody>${res.map((r, i) => {
-    const g = guesses[labTxn + i], hide = gm && !g;
-    return `<tr><td>${r.name}</td><td class="n num">${fmt(r.a, r.unit)}</td><td class="n num">${hide ? "?" : fmt(r.b, r.unit)}</td>
-      <td>${hide ? `<span class="guess" data-i="${i}"><button type="button" data-g="up" aria-label="Guess up">▲</button><button type="button" data-g="down" aria-label="Guess down">▼</button><button type="button" data-g="same" aria-label="Guess no change">=</button></span>`
-        : `<span class="dir ${r.dir}">${arrow(r.dir)}</span>${g ? ` <span class="verdict ${g === r.dir ? "r" : "w"}">${g === r.dir ? "✓ correct" : "✗ you said " + arrow(g)}</span>` : ""}`}</td></tr>`; }).join("")}</tbody>`;
-  $("#txnNote").innerHTML = `<b>Why.</b> ${esc(t.note)}`;
-}
-$("#txnList").addEventListener("click", e => { const b = e.target.closest("[data-txn]"); if (b) { labTxn = b.dataset.txn; renderLab(); } });
-$("#txnAmt").addEventListener("input", renderLab);
-$("#guessMode").addEventListener("change", () => { guesses = {}; renderLab(); });
-$("#labTable").addEventListener("click", e => { const b = e.target.closest("[data-g]"); if (!b) return; guesses[labTxn + b.parentElement.dataset.i] = b.dataset.g; renderLab(); });
-
 /* ---------- FLASHCARDS ---------- */
 let deck = [], fcI = 0, fcKnown = 0;
 function buildDeck() {
@@ -1121,7 +961,7 @@ function renderSheet() {
 $("#sheetSearch").addEventListener("input", renderSheet);
 
 /* ---------- routing & init ---------- */
-const VIEWS = ["ratios", "data", "lab", "cards", "quiz", "sheet"];
+const VIEWS = ["ratios", "cards", "quiz", "sheet"];
 function route() {
   const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "ratios";
   VIEWS.forEach(x => { $("#view-" + x).hidden = x !== v; });
@@ -1132,12 +972,8 @@ window.addEventListener("hashchange", () => { route(); window.scrollTo(0, 0); })
 
 function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 3200); }
 
-function refreshAll(keepTable) {
-  recompute(); syncToggles(); renderCompany(); renderRatios(); renderLab(); renderSheet();
-  if (!keepTable) {
-    renderDataTable();
-    $("#companyName").value = state.company; $("#y1Label").value = state.y1Label; $("#y2Label").value = state.y2Label;
-  } else updateTotals();
+function refreshAll() {
+  recompute(); syncToggles(); renderCompany(); renderRatios(); renderSheet();
   if (!$("#view-cards").hidden || !deck.length) renderCard();
 }
 $("#fcCat").innerHTML = `<option value="all">All categories</option>` + CATS.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join("");
