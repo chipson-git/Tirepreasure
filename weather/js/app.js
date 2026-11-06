@@ -283,6 +283,7 @@
       renderChart(c);
       renderDaily(c);
       renderBest(c);
+      renderSupport();
     } else if (state.tab === 'road') {
       renderRoad(c);
       renderPlaces();
@@ -546,6 +547,41 @@
           : '<span class="best-day muted-text">' + t('noGoodDay') + '</span><span></span>') +
         '</div>';
     }).join('');
+  }
+
+  /* ---------- მხარდაჭერა და სპონსორობა ---------- */
+
+  function renderSupport() {
+    var cfg = window.APP_CONFIG || {};
+    var links = (cfg.donate || []).filter(function (d) { return d && /^https:\/\//.test(d.url); });
+    var email = cfg.contactEmail || '';
+    $('support-card').classList.toggle('hidden', !links.length && !email);
+    var html = '';
+    if (links.length) {
+      html += '<p>' + t('supportText') + '</p><div class="support-links">' + links.map(function (d) {
+        return '<a class="btn" href="' + esc(d.url) + '" target="_blank" rel="noopener">☕ ' + esc(d.label || t('supportBtn')) + '</a>';
+      }).join('') + '</div>';
+    }
+    if (email) {
+      html += '<div class="sponsor"><b>' + t('sponsorTitle') + '</b><p class="hint">' + t('sponsorText') + '</p>' +
+        '<div class="email-row"><a href="mailto:' + esc(email) + '" class="email" id="contact-email">' + esc(email) + '</a>' +
+        '<button type="button" class="btn ghost" id="copy-email">' + t('copyEmail') + '</button></div></div>';
+    }
+    $('support').innerHTML = html;
+  }
+
+  function copyEmail() {
+    var email = (window.APP_CONFIG || {}).contactEmail || '';
+    function fallback() {
+      var range = document.createRange();
+      range.selectNodeContents($('contact-email'));
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(email).then(function () { toast(t('copied')); }, fallback);
+    } else fallback();
   }
 
   /* ---------- გზა და მთა ---------- */
@@ -934,6 +970,7 @@
   $('gps').addEventListener('click', useGps);
   $('fav-toggle').addEventListener('click', toggleFavorite);
   $('share').addEventListener('click', doShare);
+  $('support').addEventListener('click', function (e) { if (e.target.id === 'copy-email') copyEmail(); });
   $('favorites').addEventListener('click', function (e) {
     var b = e.target.closest('[data-fav]');
     if (b) setLocation(state.favorites[Number(b.getAttribute('data-fav'))]);

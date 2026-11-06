@@ -3,12 +3,13 @@
  *  - აპის ფაილები მუშაობს ინტერნეტის გარეშეც (პროგნოზები ინახება localStorage-ში, app.js)
  *  - ფონური შემოწმება (Periodic Background Sync): თუ მომდევნო 2 საათში წვიმაა — შეტყობინება
  */
-var CACHE = 'five-weather-v4';
+var CACHE = 'five-weather-v5';
 var CONFIG_CACHE = 'five-weather-config';
 var SHELL = [
   './',
   'index.html',
   'css/style.css',
+  'js/config.js',
   'js/i18n.js',
   'js/consensus.js',
   'js/providers.js',

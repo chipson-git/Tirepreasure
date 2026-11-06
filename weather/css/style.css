@@ -410,3 +410,12 @@ legend { font-weight: 700; font-size: .9rem; padding: 0; margin-bottom: 6px; }
 .switch small { color: var(--muted); font-size: .78rem; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }
 .dialog-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+
+/* ---------- მხარდაჭერა ---------- */
+.support p { margin: 0 0 10px; }
+.support-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.support-links .btn { text-decoration: none; display: inline-block; }
+.sponsor { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.sponsor .hint { margin: 2px 0 8px; }
+.email-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.email { font-weight: 600; word-break: break-all; user-select: all; }
