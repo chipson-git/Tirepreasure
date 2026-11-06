@@ -608,6 +608,7 @@
     var m = X.mountainSummary(det, Date.now());
     if (!m || !m.relevant) { $('mountain').innerHTML = '<p class="hint">' + t('mountainLow') + '</p>'; return; }
     var html = '<div class="tiles">' +
+      tile(t('elevationLbl'), num(m.elevation) ? t('elev', { x: Math.round(m.elevation) }) : '—') +
       tile(t('snowDepth'), I.cm(m.snowDepth)) +
       tile(t('newSnow24'), I.cm(m.newSnow24)) +
       tile(t('newSnow72'), I.cm(m.newSnow72)) +
