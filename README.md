@@ -77,11 +77,13 @@ tests/calc.test.js  — ტესტები
 
 ## 📊 CIA Ratio Ledger (`ratios/`)
 
-A separate study app for CIA Part 3 financial ratios. Open `ratios/index.html` in a browser
-(or `http://localhost:8080/ratios/` with the server above).
+A study app for the 26 financial ratios in Gleim CIA Challenge Study Unit 10 (Accounting and Performance Measures).
+Open `ratios/index.html` in a browser (or `http://localhost:8080/ratios/` with the server above).
 
-- 49 ratios in 6 groups (liquidity, activity, leverage, profitability, market, cash flow), each with the formula, a worked calculation using real numbers, what it means and a CIA exam tip
-- DuPont (3-step and 5-step) and a cash conversion cycle chart
+- Liquidity (5), activity (7), solvency (3), profitability (6), investor & market (3) and dividend (2) ratios, each with the book's formula, a worked calculation, what it means and an exam tip
+- The sample company is the book's example (Examples 10-4 and 10-5), so results match the worked examples
+- Common-size (vertical/horizontal) income statement and a cash conversion cycle chart
 - Editable two-year financial statements (saved in the browser)
 - Transaction lab: see how a transaction moves the current ratio, quick ratio, debt ratio and others, with a guess mode
 - Flashcards, a 10-question practice quiz (concepts, calculations, transaction effects) and a cheat sheet of exam traps
+- Light and dark theme

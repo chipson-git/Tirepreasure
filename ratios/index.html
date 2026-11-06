@@ -104,14 +104,11 @@ label.inline { display: inline-flex; gap: 6px; align-items: center; font-size: .
 /* snapshot */
 .snapshot { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 18px; }
 @media (max-width: 860px) { .snapshot { grid-template-columns: minmax(0, 1fr); } }
-.dupont { display: flex; align-items: stretch; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
 .dp-box { flex: 1 1 84px; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; min-width: 0; }
 .dp-box .v { font-family: var(--f-mono); font-size: 1.3rem; font-weight: 500; }
 .dp-box .y1 { font-family: var(--f-mono); font-size: .78rem; color: var(--muted); }
 .dp-box.result { background: var(--accent-soft); border-color: transparent; }
 .dp-box.result .v { color: var(--accent); }
-#dupont5 .dp-box .v { font-size: 1.05rem; }
-#dupont5 .dp-box { padding: 8px 9px; }
 .dp-op { align-self: center; font-family: var(--f-mono); color: var(--muted); font-size: 1.1rem; }
 .ccc-svg { width: 100%; height: auto; display: block; margin-top: 10px; }
 .ccc-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: .8rem; color: var(--muted); margin-top: 6px; }
@@ -228,7 +225,7 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
 <header class="top">
   <div class="wrap">
     <div class="top-row">
-      <div class="brand"><h1>CIA Ratio Ledger</h1><span class="tag">Part 3 · Financial Management</span></div>
+      <div class="brand"><h1>CIA Ratio Ledger</h1><span class="tag">CIA Challenge · SU 10</span></div>
       <div class="company" id="companyLine"></div>
       <div class="toggle" role="group" aria-label="Color theme">
         <button type="button" id="themeLight" aria-pressed="true">☀ Light</button>
@@ -252,7 +249,7 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
     <div class="view-head">
       <div>
         <h2>Financial ratios</h2>
-        <p>Every ratio is calculated from the statements on the Data tab. Click any card to see the formula with the real numbers plugged in, what it means, and the exam trap to watch for.</p>
+        <p>The 26 ratios from Gleim CIA Challenge Study Unit 10, calculated from the statements on the Financial data tab. Click any card for the formula with the numbers plugged in, what it means, and the exam trap to watch for.</p>
       </div>
       <div class="row">
         <div class="toggle" role="group" aria-label="Balance basis">
@@ -268,20 +265,19 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
 
     <div class="snapshot">
       <div class="panel">
-        <span class="eyebrow">DuPont analysis</span>
-        <h3>What drives return on equity</h3>
-        <div class="dupont" id="dupont3"></div>
-        <div class="dupont" id="dupont5"></div>
-        <p class="small muted" style="margin-top:10px">Top row: 3-step DuPont. Bottom row: 5-step DuPont, which splits net margin into tax burden, interest burden and operating margin. The small figure in each box is the prior year.</p>
+        <span class="eyebrow">Vertical &amp; horizontal analysis</span>
+        <h3>Common-size income statement</h3>
+        <div class="tbl-wrap" style="margin-top:10px"><table id="commonSize"></table></div>
+        <p class="small muted" style="margin-top:10px">Vertical analysis: every line as a percentage of net sales (sales = 100%). Change column: horizontal analysis, the percentage growth of each line since the prior year.</p>
       </div>
       <div class="panel">
         <span class="eyebrow">Cash conversion cycle</span>
         <h3 id="cccTitle">Days cash is tied up</h3>
         <svg class="ccc-svg" id="cccSvg" viewBox="0 0 400 120" role="img" aria-label="Cash conversion cycle timeline"></svg>
         <div class="ccc-legend">
-          <span><i class="sw" style="background:var(--accent)"></i>Days inventory outstanding</span>
-          <span><i class="sw" style="background:var(--warn)"></i>Days sales outstanding</span>
-          <span><i class="sw" style="background:var(--bad)"></i>Days payables outstanding</span>
+          <span><i class="sw" style="background:var(--accent)"></i>Days' sales in inventory</span>
+          <span><i class="sw" style="background:var(--warn)"></i>Days' sales in receivables</span>
+          <span><i class="sw" style="background:var(--bad)"></i>Days' payables outstanding</span>
         </div>
         <p class="small muted" id="cccNote" style="margin-top:12px"></p>
       </div>
@@ -296,7 +292,7 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
     <div class="view-head">
       <div>
         <h2>Financial statements</h2>
-        <p>Type over any figure and every ratio, chart and quiz question updates. All amounts are in thousands except shares (thousands) and share price (dollars). Your edits are saved in this browser.</p>
+        <p>Type over any figure and every ratio, chart and quiz question updates. All amounts are in dollars. The sample is the company from the book's Examples 10-4 and 10-5; its dividends, share count and share price are assumed. Your edits are saved in this browser.</p>
       </div>
       <div class="row">
         <button class="btn" type="button" id="resetSample">Load sample company</button>
@@ -332,8 +328,8 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
     <div class="lab">
       <div class="panel" style="display:grid;gap:12px">
         <div class="amt">
-          <label for="txnAmt" class="eyebrow">Transaction amount (thousands)</label>
-          <div class="row"><input type="range" id="txnAmt" min="10" max="1000" step="10" value="100" style="flex:1"><span class="num" id="txnAmtOut" style="min-width:60px;text-align:right">100</span></div>
+          <label for="txnAmt" class="eyebrow">Transaction amount ($)</label>
+          <div class="row"><input type="range" id="txnAmt" min="1000" max="200000" step="1000" value="10000" style="flex:1"><span class="num" id="txnAmtOut" style="min-width:70px;text-align:right">10,000</span></div>
         </div>
         <div class="txn-list" id="txnList"></div>
       </div>
@@ -444,64 +440,68 @@ $("#themeLight").addEventListener("click", () => applyTheme("light"));
 $("#themeDark").addEventListener("click", () => applyTheme("dark"));
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-/* ---------- line items ---------- */
+/* ---------- line items (Gleim CIA Challenge SU 10 layout) ---------- */
 const FIELDS = [
   { group: "Income statement", items: [
-    ["sales", "Net sales (revenue)"], ["cogs", "Cost of goods sold"], ["opex", "Operating expenses (SG&A, excl. depreciation)"],
-    ["dep", "Depreciation & amortization"], ["interest", "Interest expense"], ["lease", "Lease / rent payments"],
-    ["tax", "Income tax expense"], ["prefDiv", "Preferred dividends"], ["comDiv", "Common dividends"] ] },
+    ["sales", "Net sales (all on credit)"], ["cogs", "Cost of goods sold"], ["sga", "SG&A expenses"],
+    ["other", "Other expenses, net (enter other income as negative)"], ["interest", "Interest expense"], ["tax", "Income taxes"] ] },
   { group: "Current assets", items: [
-    ["cash", "Cash & cash equivalents"], ["sec", "Marketable securities"], ["ar", "Accounts receivable (net)"],
-    ["inv", "Inventory"], ["prepaid", "Prepaid expenses & other current assets"] ] },
-  { group: "Non-current assets", items: [ ["ppe", "Property, plant & equipment (net)"], ["otherA", "Other non-current assets"] ] },
-  { group: "Current liabilities", items: [ ["ap", "Accounts payable"], ["accrued", "Accrued & other current liabilities"], ["std", "Short-term debt & current portion of LTD"] ] },
-  { group: "Non-current liabilities", items: [ ["ltd", "Long-term debt"], ["otherL", "Other non-current liabilities"] ] },
-  { group: "Equity", items: [ ["prefEq", "Preferred stock"], ["comEq", "Common shareholders' equity"] ] },
-  { group: "Cash flow & market data", items: [ ["cfo", "Cash flow from operations"], ["capex", "Capital expenditures"], ["shares", "Weighted avg. common shares (thousands)"], ["price", "Share price at year-end ($)"] ] }
+    ["cash", "Cash & equivalents"], ["sec", "Marketable (available-for-sale) securities"], ["ar", "Accounts receivable (net)"],
+    ["notesRec", "Notes receivable"], ["inv", "Inventories"], ["prepaid", "Prepaid expenses"] ] },
+  { group: "Noncurrent assets", items: [ ["ppe", "Property, plant & equipment (net)"], ["otherNCA", "Other noncurrent assets (investments, goodwill)"] ] },
+  { group: "Current liabilities", items: [ ["ap", "Accounts payable"], ["otherCL", "Other current liabilities (notes, accruals, current LTD, taxes)"] ] },
+  { group: "Noncurrent liabilities", items: [ ["ncl", "Noncurrent liabilities (bonds, LT notes, other)"] ] },
+  { group: "Stockholders' equity", items: [ ["prefEq", "Preferred stock"], ["comEq", "Common equity (common stock + APIC + retained earnings)"] ] },
+  { group: "Cash flow, dividends & market data", items: [
+    ["cfo", "Cash flows from operations"], ["prefDiv", "Preferred dividends"], ["totalDiv", "Total dividends paid (common + preferred)"],
+    ["shares", "Common shares outstanding (weighted average)"], ["price", "Market price per share ($)"] ] },
+  { group: "Balances at the start of the prior year (for prior-year averages)", openOnly: true, items: [
+    ["ar0", "Accounts receivable, beginning of prior year"], ["inv0", "Inventories, beginning of prior year"], ["ap0", "Accounts payable, beginning of prior year"] ] }
 ];
 const KEYS = FIELDS.flatMap(g => g.items.map(i => i[0]));
 const LABEL = Object.fromEntries(FIELDS.flatMap(g => g.items));
 
+// Statements from Gleim SU 10, Examples 10-4 and 10-5 (CFO, purchases and opening balances from Examples 10-8 to 10-13).
+// Dividends, share price and share count are assumed so the market ratios can be calculated.
 const SAMPLE = {
-  company: "Kestrel Components Inc. (sample)", y1Label: "2024", y2Label: "2025",
-  y1: { sales: 8200, cogs: 5330, opex: 1450, dep: 320, interest: 210, lease: 90, tax: 223, prefDiv: 40, comDiv: 260,
-        cash: 420, sec: 150, ar: 980, inv: 1150, prepaid: 60, ppe: 3900, otherA: 340,
-        ap: 720, accrued: 310, std: 400, ltd: 2300, otherL: 0, prefEq: 400, comEq: 2870,
-        cfo: 980, capex: 600, shares: 500, price: 18.5 },
-  y2: { sales: 9400, cogs: 6016, opex: 1620, dep: 360, interest: 240, lease: 90, tax: 291, prefDiv: 40, comDiv: 300,
-        cash: 380, sec: 120, ar: 1210, inv: 1420, prepaid: 70, ppe: 4350, otherA: 350,
-        ap: 860, accrued: 330, std: 520, ltd: 2500, otherL: 0, prefEq: 400, comEq: 3290,
-        cfo: 1050, capex: 810, shares: 500, price: 22 }
+  company: "SU 10 textbook example", y1Label: "Prior year", y2Label: "Current year",
+  y1: { sales: 1400000, cogs: 1170000, sga: 160000, other: 25000, interest: 10000, tax: 14000,
+        cash: 275000, sec: 145000, ar: 115000, notesRec: 40000, inv: 55000, prepaid: 5000, ppe: 845000, otherNCA: 120000,
+        ap: 75000, otherCL: 200000, ncl: 675000, prefEq: 0, comEq: 650000,
+        cfo: 291000, prefDiv: 0, totalDiv: 10000, shares: 500000, price: 0.75, ar0: 105000, inv0: 45000, ap0: 65000 },
+  y2: { sales: 1800000, cogs: 1450000, sga: 200000, other: 65000, interest: 15000, tax: 28000,
+        cash: 325000, sec: 165000, ar: 120000, notesRec: 55000, inv: 85000, prepaid: 10000, ppe: 915000, otherNCA: 125000,
+        ap: 150000, otherCL: 240000, ncl: 610000, prefEq: 130000, comEq: 670000,
+        cfo: 382000, prefDiv: 0, totalDiv: 22000, shares: 500000, price: 1.2 }
 };
 
-let state = store.get("data", null) || JSON.parse(JSON.stringify(SAMPLE));
+let state = store.get("data-su10", null) || JSON.parse(JSON.stringify(SAMPLE));
 let settings = Object.assign({ avg: true, days: 365 }, store.get("settings", {}));
-function save() { store.set("data", state); store.set("settings", settings); }
+function save() { store.set("data-su10", state); store.set("settings", settings); }
 
 /* ---------- derived figures ---------- */
 function derive(r, prev) {
-  const n = k => +r[k] || 0;
-  const d = Object.fromEntries(KEYS.map(k => [k, n(k)]));
+  const d = Object.fromEntries(KEYS.map(k => [k, +r[k] || 0]));
   d.gp = d.sales - d.cogs;
-  d.ebitda = d.gp - d.opex;
-  d.ebit = d.ebitda - d.dep;
+  d.opInc = d.gp - d.sga;
+  d.ebit = d.opInc - d.other;
   d.ebt = d.ebit - d.interest;
   d.ni = d.ebt - d.tax;
-  d.quick = d.cash + d.sec + d.ar;
+  d.quick = d.cash + d.sec + d.ar + d.notesRec;
   d.ca = d.quick + d.inv + d.prepaid;
-  d.ta = d.ca + d.ppe + d.otherA;
-  d.cl = d.ap + d.accrued + d.std;
-  d.tl = d.cl + d.ltd + d.otherL;
-  d.debt = d.std + d.ltd;
+  d.nca = d.ppe + d.otherNCA;
+  d.ta = d.ca + d.nca;
+  d.cl = d.ap + d.otherCL;
+  d.tl = d.cl + d.ncl;
   d.eq = d.prefEq + d.comEq;
   d.nwc = d.ca - d.cl;
-  d.purchases = d.cogs + d.inv - (prev ? (+prev.inv || 0) : d.inv);
+  d.invested = d.ncl + d.eq;
+  d.purchases = d.cogs + d.inv - (prev && prev.inv != null ? +prev.inv || 0 : d.inv);
   d.niCommon = d.ni - d.prefDiv;
+  d.comDiv = d.totalDiv - d.prefDiv;
   d.eps = d.shares ? d.niCommon / d.shares : NaN;
   d.dps = d.shares ? d.comDiv / d.shares : NaN;
-  d.bvps = d.shares ? d.comEq / d.shares : NaN;
-  d.taxRate = d.ebt ? d.tax / d.ebt : NaN;
-  d.fcf = d.cfo - d.capex;
+  d.bvps = d.shares ? (d.eq - d.prefEq) / d.shares : NaN;
   d.imbalance = d.ta - d.tl - d.eq;
   return d;
 }
@@ -509,16 +509,17 @@ function derive(r, prev) {
 /* ---------- formatting ---------- */
 const nf0 = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 const nf2 = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const nf3 = new Intl.NumberFormat("en-US", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 const nf1 = new Intl.NumberFormat("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 function n(v) { if (!isFinite(v)) return "n/a"; return Math.abs(v) >= 100 || Number.isInteger(v) ? nf0.format(v) : nf2.format(v); }
 function fmt(v, unit) {
   if (v == null || !isFinite(v)) return "n/a";
   switch (unit) {
     case "%": return nf1.format(v * 100) + "%";
-    case "x": return nf2.format(v) + "×";
+    case "x": return (Math.abs(v) < 1 ? nf3.format(v) : nf2.format(v)) + "×";
     case "days": return nf1.format(v) + " days";
-    case "$": return (v < 0 ? "−$" : "$") + nf0.format(Math.abs(v)) + "k";
-    case "ps": return (v < 0 ? "−$" : "$") + nf2.format(Math.abs(v));
+    case "$": return (v < 0 ? "−$" : "$") + nf0.format(Math.abs(v));
+    case "ps": return (v < 0 ? "−$" : "$") + (Math.abs(v) < 1 ? nf3 : nf2).format(Math.abs(v));
     default: return nf2.format(v);
   }
 }
@@ -529,7 +530,7 @@ function makeCtx(c, p) {
   return {
     c, p, days: settings.days, useAvg,
     A(key, label) {
-      if (useAvg) { const v = (c[key] + p[key]) / 2; return { v, step: `Avg. ${label} = (${n(p[key])} + ${n(c[key])}) ÷ 2 = ${n(v)}`, lbl: "avg. " + label }; }
+      if (useAvg && p[key] != null && isFinite(p[key])) { const v = (c[key] + p[key]) / 2; return { v, step: `Avg. ${label} = (${n(p[key])} + ${n(c[key])}) ÷ 2 = ${n(v)}`, lbl: "avg. " + label }; }
       return { v: c[key], step: null, lbl: "ending " + label };
     }
   };
@@ -541,226 +542,133 @@ function F(name, numLbl, num, denLbl, den, mult = 1, unit = "x", pre = []) {
   return { v, steps: [...pre.filter(Boolean), `${name} = ${numLbl} ÷ ${denLbl}${m}`, `= ${n(num)} ÷ ${n(den)}${m} = ${fmt(v, unit)}`] };
 }
 
-/* ---------- ratio library ---------- */
+/* ---------- ratio library: exactly the ratios in Gleim CIA Challenge SU 10.2 ---------- */
 const CATS = [
-  { id: "liq", name: "Liquidity", blurb: "Can the company pay obligations due within a year?" },
-  { id: "act", name: "Activity", blurb: "How efficiently are assets and working capital used?" },
-  { id: "lev", name: "Leverage & solvency", blurb: "How is the company financed, and can it carry its debt?" },
-  { id: "prof", name: "Profitability", blurb: "How much profit is generated from sales, assets and equity?" },
-  { id: "mkt", name: "Market & dividend", blurb: "How investors value the shares and how earnings are shared." },
-  { id: "cf", name: "Cash flow", blurb: "Is profit turning into cash?" }
+  { id: "liq", name: "Liquidity", blurb: "Ability to pay current debts as they come due and stay in business in the short run." },
+  { id: "act", name: "Activity", blurb: "How efficiently the organization manages its assets and working capital." },
+  { id: "solv", name: "Solvency", blurb: "Ability to meet long-term obligations: capital structure and leverage." },
+  { id: "prof", name: "Profitability", blurb: "Profit earned on sales, on assets and on the owners' investment." },
+  { id: "mkt", name: "Investor & market", blurb: "What a share earns, is worth on the books, and costs in the market." },
+  { id: "div", name: "Dividends", blurb: "How much of earnings, and of the share price, is paid out as dividends." }
 ];
 // better: 1 higher is better, -1 lower is better, 0 depends
 const R = [
   // LIQUIDITY
-  { id: "current", cat: "liq", name: "Current ratio", unit: "x", better: 1, formula: "Current assets ÷ Current liabilities",
-    calc: x => F("Current ratio", "Current assets", x.c.ca, "Current liabilities", x.c.cl),
-    meaning: "How many dollars of current assets cover each dollar of current liabilities.",
-    rule: "Around 1.5–2.0 is often called comfortable, but it depends on the industry. Too high can mean idle cash or slow inventory.",
-    tip: "If the ratio is above 1, paying a current liability with cash INCREASES it. If below 1, the same payment DECREASES it. Equal changes to numerator and denominator move a ratio toward 1." },
-  { id: "quick", cat: "liq", name: "Quick (acid-test) ratio", unit: "x", better: 1, formula: "(Cash + Marketable securities + Receivables) ÷ Current liabilities",
-    calc: x => F("Quick ratio", "(Cash + Securities + A/R)", x.c.quick, "Current liabilities", x.c.cl, 1, "x", [`Quick assets = ${n(x.c.cash)} + ${n(x.c.sec)} + ${n(x.c.ar)} = ${n(x.c.quick)}`]),
-    meaning: "Liquidity without relying on selling inventory.",
-    rule: "1.0 or more is the classic benchmark.",
-    tip: "Inventory AND prepaid expenses are excluded. A common distractor answer includes prepaids, or subtracts only inventory from current assets." },
-  { id: "cashr", cat: "liq", name: "Cash ratio", unit: "x", better: 1, formula: "(Cash + Marketable securities) ÷ Current liabilities", added: true,
-    calc: x => F("Cash ratio", "(Cash + Securities)", x.c.cash + x.c.sec, "Current liabilities", x.c.cl),
-    meaning: "The strictest liquidity test: only cash and near-cash.",
-    tip: "Receivables are excluded here, unlike the quick ratio." },
-  { id: "ocfr", cat: "liq", name: "Operating cash flow ratio", unit: "x", better: 1, formula: "Cash flow from operations ÷ Current liabilities", added: true,
-    calc: x => F("Operating cash flow ratio", "CFO", x.c.cfo, "Current liabilities", x.c.cl),
-    meaning: "Whether cash generated by operations covers short-term obligations.",
-    tip: "Uses cash flow, not earnings, so accrual accounting choices affect it less." },
-  { id: "nwc", cat: "liq", name: "Net working capital", unit: "$", better: 1, formula: "Current assets − Current liabilities",
+  { id: "nwc", cat: "liq", name: "Net working capital", unit: "$", better: 1, ref: "SU 10.2", formula: "Current assets − Current liabilities",
     calc: x => ({ v: x.c.nwc, steps: ["Net working capital = Current assets − Current liabilities", `= ${n(x.c.ca)} − ${n(x.c.cl)} = ${fmt(x.c.nwc, "$")}`] }),
-    meaning: "The dollar cushion of current assets over current liabilities.",
-    tip: "Working capital is an amount, not a ratio. Collecting receivables or buying inventory for cash does not change it. Paying a current liability with cash does not change it either, even though the current ratio moves." },
-  { id: "defint", cat: "liq", name: "Defensive interval", unit: "days", better: 1, formula: "Quick assets ÷ Daily cash operating expenses", added: true,
-    calc: x => { const daily = (x.c.cogs + x.c.opex) / x.days; return F("Defensive interval", "Quick assets", x.c.quick, "Daily cash expenses", daily, 1, "days", [`Daily cash expenses = (COGS + Operating expenses) ÷ ${x.days} = (${n(x.c.cogs)} + ${n(x.c.opex)}) ÷ ${x.days} = ${n(daily)}`]); },
-    meaning: "How many days the company could keep operating using only its liquid assets, with no new revenue.",
-    tip: "Depreciation is excluded from daily expenses because it uses no cash." },
+    meaning: "The resources the organization would have left to keep operating in the short run if it paid all its current liabilities.",
+    tip: "It is an amount, not a ratio. \"Working capital\" alone means current assets only; NET working capital subtracts current liabilities." },
+  { id: "nwcr", cat: "liq", name: "Net working capital ratio", unit: "x", better: 1, ref: "Ex. 10-6", formula: "(Current assets − Current liabilities) ÷ Total assets",
+    calc: x => F("NWC ratio", "(CA − CL)", x.c.nwc, "Total assets", x.c.ta, 1, "x", [`CA − CL = ${n(x.c.ca)} − ${n(x.c.cl)} = ${n(x.c.nwc)}`]),
+    meaning: "Net working capital as a share of total assets.",
+    tip: "The denominator is TOTAL ASSETS. In the book's example the ratio fell from 0.225 to 0.206 even though net working capital rose by $10,000: current liabilities are taking a bigger bite." },
+  { id: "current", cat: "liq", name: "Current ratio", unit: "x", better: 1, ref: "Ex. 10-7", formula: "Current assets ÷ Current liabilities",
+    calc: x => F("Current ratio", "Current assets", x.c.ca, "Current liabilities", x.c.cl),
+    meaning: "The higher the ratio, the more likely the business can pay its short-term obligations. An overly high ratio can mean inefficient working capital management.",
+    rule: "It should be proportional to the operating cycle: a grocery store (short cycle) can run with a lower current ratio than a gold mining company.",
+    tip: "Check the quality of receivables and inventory first: obsolete or overvalued items inflate the ratio. If the ratio is above 1, paying a current liability with cash INCREASES it; below 1 it DECREASES it." },
+  { id: "quick", cat: "liq", name: "Quick (acid-test) ratio", unit: "x", better: 1, ref: "SU 10.2", formula: "(Cash & equivalents + Short-term marketable securities + Net receivables) ÷ Current liabilities",
+    calc: x => F("Quick ratio", "Quick assets", x.c.quick, "Current liabilities", x.c.cl, 1, "x", [`Quick assets = ${n(x.c.cash)} + ${n(x.c.sec)} + ${n(x.c.ar)} + ${n(x.c.notesRec)} (notes rec.) = ${n(x.c.quick)}`]),
+    meaning: "Ability to pay short-term debts easily, without the problem of valuing inventory.",
+    tip: "Inventories AND prepaid items are excluded because they are hard to liquidate at their carrying amounts. Receivables (accounts and notes) stay in." },
+  { id: "cfr", cat: "liq", name: "Cash flow ratio", unit: "x", better: 1, ref: "Ex. 10-8", formula: "Cash flows from operations ÷ Current liabilities",
+    calc: x => F("Cash flow ratio", "Cash flows from operations", x.c.cfo, "Current liabilities", x.c.cl),
+    meaning: "Whether the cash generated by operations covers current liabilities. Even more conservative than the quick ratio, though less commonly used.",
+    tip: "The numerator is operating cash FLOW from the statement of cash flows, not the cash balance. The book calls this the cash ratio in the text but labels the formula the cash flow ratio." },
 
   // ACTIVITY
-  { id: "arto", cat: "act", name: "Receivables turnover", unit: "x", better: 1, formula: "Net credit sales ÷ Average accounts receivable",
-    calc: x => { const a = x.A("ar", "A/R"); return F("Receivables turnover", "Net sales", x.c.sales, a.lbl, a.v, 1, "x", [a.step]); },
-    meaning: "How many times a year receivables are collected.",
-    tip: "Use CREDIT sales when the question gives them. This app assumes all sales are on credit. A very high turnover can also mean credit terms are too strict." },
-  { id: "dso", cat: "act", name: "Days sales outstanding", unit: "days", better: -1, formula: "Days in year ÷ Receivables turnover   (= A/R ÷ (Credit sales ÷ days))",
-    calc: x => { const a = x.A("ar", "A/R"); const t = x.c.sales / a.v; return { v: x.days / t, steps: [a.step, `Receivables turnover = ${n(x.c.sales)} ÷ ${n(a.v)} = ${fmt(t, "x")}`, `DSO = ${x.days} ÷ ${nf2.format(t)} = ${fmt(x.days / t, "days")}`].filter(Boolean) }; },
-    meaning: "Average number of days it takes to collect a sale. Also called the average collection period.",
-    tip: "Check whether the question uses 360 or 365 days. Compare DSO with the credit terms (for example net 30)." },
-  { id: "invto", cat: "act", name: "Inventory turnover", unit: "x", better: 1, formula: "Cost of goods sold ÷ Average inventory",
+  { id: "arto", cat: "act", name: "Accounts receivable turnover", unit: "x", better: 1, ref: "Ex. 10-9", formula: "Net credit sales ÷ Average accounts receivable",
+    calc: x => { const a = x.A("ar", "A/R"); return F("A/R turnover", "Net credit sales", x.c.sales, a.lbl, a.v, 1, "x", [a.step]); },
+    meaning: "Times a year the receivables balance is converted to cash: how effectively receivables are collected.",
+    tip: "Higher means customers pay promptly. Credit terms such as 2/10, net 30 lower receivables and raise turnover. If the business is highly seasonal, average the MONTHLY balances." },
+  { id: "dsr", cat: "act", name: "Days' sales in receivables", unit: "days", better: -1, ref: "Ex. 10-10", formula: "Days in year ÷ Accounts receivable turnover",
+    calc: x => { const a = x.A("ar", "A/R"); const t = x.c.sales / a.v; return { v: x.days / t, steps: [a.step, `A/R turnover = ${n(x.c.sales)} ÷ ${n(a.v)} = ${fmt(t, "x")}`, `Days' sales in receivables = ${x.days} ÷ ${nf2.format(t)} = ${fmt(x.days / t, "days")}`].filter(Boolean) }; },
+    meaning: "Average days between the sale and collection of the invoice. Also called the average collection period or days' sales outstanding.",
+    tip: "The book rounds the turnover to one decimal before dividing (365 ÷ 15.3 = 23.9 days); this app does not round, so it can differ by 0.1." },
+  { id: "invto", cat: "act", name: "Inventory turnover", unit: "x", better: 1, ref: "Ex. 10-11", formula: "Cost of goods sold ÷ Average inventory",
     calc: x => { const a = x.A("inv", "inventory"); return F("Inventory turnover", "COGS", x.c.cogs, a.lbl, a.v, 1, "x", [a.step]); },
-    meaning: "How many times inventory is sold and replaced during the year.",
-    tip: "Use COGS, not sales, because inventory is carried at cost. In rising prices, LIFO gives lower inventory and higher COGS, so turnover is HIGHER than under FIFO." },
-  { id: "dio", cat: "act", name: "Days inventory outstanding", unit: "days", better: -1, formula: "Days in year ÷ Inventory turnover",
-    calc: x => { const a = x.A("inv", "inventory"); const t = x.c.cogs / a.v; return { v: x.days / t, steps: [a.step, `Inventory turnover = ${n(x.c.cogs)} ÷ ${n(a.v)} = ${fmt(t, "x")}`, `DIO = ${x.days} ÷ ${nf2.format(t)} = ${fmt(x.days / t, "days")}`].filter(Boolean) }; },
-    meaning: "Average days an item sits in inventory before it is sold.",
-    tip: "Also called days in inventory or the inventory conversion period." },
-  { id: "apto", cat: "act", name: "Payables turnover", unit: "x", better: 0, formula: "Purchases ÷ Average accounts payable   (Purchases = COGS + Ending inv. − Beginning inv.)", added: true,
-    calc: x => { const a = x.A("ap", "A/P"); const pre = [x.p ? `Purchases = ${n(x.c.cogs)} + ${n(x.c.inv)} − ${n(x.p.inv)} = ${n(x.c.purchases)}` : "Purchases ≈ COGS (no prior year inventory)", a.step]; return F("Payables turnover", "Purchases", x.c.purchases, a.lbl, a.v, 1, "x", pre); },
-    meaning: "How many times a year suppliers are paid.",
-    tip: "Some questions use COGS instead of purchases. Read which one is given. Lower turnover means the company is stretching its payables." },
-  { id: "dpo", cat: "act", name: "Days payables outstanding", unit: "days", better: 0, formula: "Days in year ÷ Payables turnover", added: true,
-    calc: x => { const a = x.A("ap", "A/P"); const t = x.c.purchases / a.v; return { v: x.days / t, steps: [a.step, `Payables turnover = ${n(x.c.purchases)} ÷ ${n(a.v)} = ${fmt(t, "x")}`, `DPO = ${x.days} ÷ ${nf2.format(t)} = ${fmt(x.days / t, "days")}`].filter(Boolean) }; },
-    meaning: "Average days taken to pay suppliers.",
-    tip: "A longer DPO shortens the cash conversion cycle, but stretching too far can lose early-payment discounts." },
-  { id: "opcycle", cat: "act", name: "Operating cycle", unit: "days", better: -1, formula: "Days inventory outstanding + Days sales outstanding", added: true,
-    calc: x => { const v1 = val("dio", x), v2 = val("dso", x); return { v: v1 + v2, steps: ["Operating cycle = DIO + DSO", `= ${nf1.format(v1)} + ${nf1.format(v2)} = ${fmt(v1 + v2, "days")}`] }; },
-    meaning: "Days from buying inventory to collecting cash from the customer.",
-    tip: "The operating cycle does NOT subtract payables. That is the cash conversion cycle." },
-  { id: "ccc", cat: "act", name: "Cash conversion cycle", unit: "days", better: -1, formula: "DIO + DSO − DPO", added: true,
-    calc: x => { const a = val("dio", x), b = val("dso", x), c = val("dpo", x); return { v: a + b - c, steps: ["Cash conversion cycle = DIO + DSO − DPO", `= ${nf1.format(a)} + ${nf1.format(b)} − ${nf1.format(c)} = ${fmt(a + b - c, "days")}`] }; },
-    meaning: "Days between paying suppliers and collecting from customers: how long cash is tied up in operations.",
-    tip: "Shorter is better. Ways to shorten it: sell inventory faster, collect faster, or pay suppliers later." },
-  { id: "tato", cat: "act", name: "Total asset turnover", unit: "x", better: 1, formula: "Net sales ÷ Average total assets",
-    calc: x => { const a = x.A("ta", "total assets"); return F("Total asset turnover", "Net sales", x.c.sales, a.lbl, a.v, 1, "x", [a.step]); },
-    meaning: "Sales generated per dollar of assets. It is the middle term of DuPont.",
-    tip: "Capital-intensive industries (utilities) have low turnover. Retailers have high turnover." },
-  { id: "fato", cat: "act", name: "Fixed asset turnover", unit: "x", better: 1, formula: "Net sales ÷ Average net PP&E",
-    calc: x => { const a = x.A("ppe", "net PP&E"); return F("Fixed asset turnover", "Net sales", x.c.sales, a.lbl, a.v, 1, "x", [a.step]); },
-    meaning: "How productively plant and equipment generate sales.",
-    tip: "Old, heavily depreciated assets make this ratio look better than it really is." },
-  { id: "wcto", cat: "act", name: "Working capital turnover", unit: "x", better: 1, formula: "Net sales ÷ Average net working capital", added: true,
-    calc: x => { const a = x.A("nwc", "working capital"); return F("Working capital turnover", "Net sales", x.c.sales, a.lbl, a.v, 1, "x", [a.step]); },
-    meaning: "Sales supported by each dollar of working capital.",
-    tip: "Meaningless when working capital is negative or close to zero." },
+    meaning: "Times a year inventory is converted to cash or receivables.",
+    tip: "Numerator is COGS, not sales. Higher = strong sales or low inventory. Lower = excess or obsolete inventory, but lower turnover is also normal while sales are growing. Compare with the industry norm." },
+  { id: "dsi", cat: "act", name: "Days' sales in inventory", unit: "days", better: -1, ref: "Ex. 10-12", formula: "Days in year ÷ Inventory turnover",
+    calc: x => { const a = x.A("inv", "inventory"); const t = x.c.cogs / a.v; return { v: x.days / t, steps: [a.step, `Inventory turnover = ${n(x.c.cogs)} ÷ ${n(a.v)} = ${fmt(t, "x")}`, `Days' sales in inventory = ${x.days} ÷ ${nf2.format(t)} = ${fmt(x.days / t, "days")}`].filter(Boolean) }; },
+    meaning: "Average days between acquiring inventory and selling it. Also called the inventory conversion period.",
+    tip: "An increase can come from growing sales, a product mix needing longer lead times, or a defensive build-up against supply chain risk." },
+  { id: "apto", cat: "act", name: "Accounts payable turnover", unit: "x", better: 0, ref: "Ex. 10-13", formula: "Total purchases ÷ Average accounts payable",
+    calc: x => { const a = x.A("ap", "A/P"); const pre = [x.p && x.p.inv != null ? `Purchases = COGS + Ending inv. − Beginning inv. = ${n(x.c.cogs)} + ${n(x.c.inv)} − ${n(x.p.inv)} = ${n(x.c.purchases)}` : "Purchases ≈ COGS (no beginning inventory given)", a.step]; return F("A/P turnover", "Total purchases", x.c.purchases, a.lbl, a.v, 1, "x", pre); },
+    meaning: "Times during the period the firm pays off its accounts payable.",
+    tip: "The exception to \"higher turnover is better\": a high multiple may mean the firm is not using the credit available to it. Higher turnover = paying suppliers faster (maybe taking discounts)." },
+  { id: "dpo", cat: "act", name: "Days' payables outstanding", unit: "days", better: 0, ref: "Ex. 10-14", formula: "Days in year ÷ Accounts payable turnover",
+    calc: x => { const a = x.A("ap", "A/P"); const t = x.c.purchases / a.v; return { v: x.days / t, steps: [a.step, `A/P turnover = ${n(x.c.purchases)} ÷ ${n(a.v)} = ${fmt(t, "x")}`, `Days' payables outstanding = ${x.days} ÷ ${nf2.format(t)} = ${fmt(x.days / t, "days")}`].filter(Boolean) }; },
+    meaning: "Average time between purchasing inventory and paying cash for it. Also called the average payables period or payables deferral period.",
+    tip: "A longer period may come from better negotiated credit terms, or it may signal cash flow problems. Look at the balance sheet to tell which." },
+  { id: "ccc", cat: "act", name: "Cash conversion cycle", unit: "days", better: -1, ref: "Ex. 10-15", formula: "Days' sales in inventory + Days' sales outstanding − Days' payables outstanding",
+    calc: x => { const a = val("dsi", x), b = val("dsr", x), c = val("dpo", x); return { v: a + b - c, steps: ["Cash conversion cycle = DSI + DSO − DPO", `= ${nf1.format(a)} + ${nf1.format(b)} − ${nf1.format(c)} = ${fmt(a + b - c, "days")}`] }; },
+    meaning: "Days from investing in inventory to receiving cash from the sale. Also called the net operating cycle.",
+    tip: "Shorter is better: funds are tied up in working capital for less time. Payables are SUBTRACTED. The book shows 13.8 and 22.7 days because it rounds each turnover first; this app does not round, so it shows 13.7 and 22.6." },
 
-  // LEVERAGE
-  { id: "debtr", cat: "lev", name: "Debt ratio", unit: "%", better: -1, formula: "Total liabilities ÷ Total assets",
-    calc: x => F("Debt ratio", "Total liabilities", x.c.tl, "Total assets", x.c.ta, 1, "%"),
-    meaning: "Share of assets financed by creditors.",
-    tip: "Debt ratio + Equity ratio = 1. If debt ratio = 60%, then D/E = 0.6 ÷ 0.4 = 1.5 and the equity multiplier = 1 ÷ 0.4 = 2.5." },
-  { id: "de", cat: "lev", name: "Debt-to-equity", unit: "x", better: -1, formula: "Total liabilities ÷ Total shareholders' equity",
+  // SOLVENCY
+  { id: "debtr", cat: "solv", name: "Debt ratio (debt to assets)", unit: "x", better: -1, ref: "Ex. 10-16", formula: "Total liabilities ÷ Total assets",
+    calc: x => F("Debt ratio", "Total liabilities", x.c.tl, "Total assets", x.c.ta, 1, "x"),
+    meaning: "Share of assets funded through liabilities. A debt ratio of 0.8 means 80% of assets are funded by liabilities: high reliance on debt.",
+    tip: "Uses TOTAL liabilities (current + noncurrent), not just interest-bearing debt. Debt ratio of 0.6 means D/E = 0.6 ÷ 0.4 = 1.5." },
+  { id: "de", cat: "solv", name: "Debt-to-equity ratio", unit: "x", better: -1, ref: "Ex. 10-17", formula: "Total liabilities ÷ Total shareholders' equity",
     calc: x => F("Debt-to-equity", "Total liabilities", x.c.tl, "Total equity", x.c.eq),
-    meaning: "Creditor financing per dollar of owner financing.",
-    tip: "Some sources use only interest-bearing debt in the numerator. Use whatever the question defines. Buying back shares raises D/E because equity falls." },
-  { id: "eqr", cat: "lev", name: "Equity ratio", unit: "%", better: 1, formula: "Total equity ÷ Total assets", added: true,
-    calc: x => F("Equity ratio", "Total equity", x.c.eq, "Total assets", x.c.ta, 1, "%"),
-    meaning: "Share of assets financed by owners.",
-    tip: "Equity ratio = 1 − Debt ratio." },
-  { id: "em", cat: "lev", name: "Equity multiplier", unit: "x", better: 0, formula: "Average total assets ÷ Average total equity", added: true,
-    calc: x => { const a = x.A("ta", "total assets"), b = x.A("eq", "total equity"); return F("Equity multiplier", a.lbl, a.v, b.lbl, b.v, 1, "x", [a.step, b.step]); },
-    meaning: "Financial leverage term of DuPont. Higher means more debt financing.",
-    tip: "Equity multiplier = 1 ÷ Equity ratio = 1 + D/E. Higher leverage raises ROE, and it also raises risk." },
-  { id: "ltdcap", cat: "lev", name: "Long-term debt to capitalization", unit: "%", better: -1, formula: "Long-term debt ÷ (Long-term debt + Total equity)", added: true,
-    calc: x => F("LTD to capitalization", "LTD", x.c.ltd, "(LTD + Equity)", x.c.ltd + x.c.eq, 1, "%"),
-    meaning: "Share of permanent capital that comes from long-term debt.",
-    tip: "Capitalization means long-term financing: long-term debt plus equity." },
-  { id: "tie", cat: "lev", name: "Times interest earned", unit: "x", better: 1, formula: "EBIT ÷ Interest expense",
-    calc: x => F("Times interest earned", "EBIT", x.c.ebit, "Interest expense", x.c.interest, 1, "x", [`EBIT = Sales − COGS − Opex − Depreciation = ${n(x.c.ebit)}`]),
-    meaning: "How many times operating profit covers interest. Also called interest coverage.",
-    tip: "Use EBIT (earnings before interest AND taxes), not net income. If given net income, add back tax and interest." },
-  { id: "fcc", cat: "lev", name: "Fixed charge coverage", unit: "x", better: 1, formula: "(EBIT + Lease payments) ÷ (Interest + Lease payments)", added: true,
-    calc: x => F("Fixed charge coverage", "(EBIT + Lease)", x.c.ebit + x.c.lease, "(Interest + Lease)", x.c.interest + x.c.lease),
-    meaning: "Coverage of all fixed financing charges, not just interest.",
-    tip: "Lease payments go in BOTH numerator and denominator. Always lower than or equal to TIE." },
-  { id: "cfdebt", cat: "lev", name: "Cash flow to debt", unit: "x", better: 1, formula: "Cash flow from operations ÷ Total debt", added: true,
-    calc: x => F("Cash flow to debt", "CFO", x.c.cfo, "Total debt (ST + LT)", x.c.debt),
-    meaning: "How much of the debt could be repaid from one year of operating cash flow.",
-    tip: "Its reciprocal is roughly the number of years needed to repay debt from operating cash." },
-  { id: "dol", cat: "lev", name: "Degree of operating leverage", unit: "x", better: 0, formula: "% change in EBIT ÷ % change in sales", added: true, needsPrev: true,
-    calc: x => { if (!x.p) return { v: NaN, steps: ["Needs two years of data."] }; const a = x.c.ebit / x.p.ebit - 1, b = x.c.sales / x.p.sales - 1; return { v: a / b, steps: [`% change in EBIT = ${n(x.c.ebit)} ÷ ${n(x.p.ebit)} − 1 = ${fmt(a, "%")}`, `% change in sales = ${n(x.c.sales)} ÷ ${n(x.p.sales)} − 1 = ${fmt(b, "%")}`, `DOL = ${fmt(a, "%")} ÷ ${fmt(b, "%")} = ${fmt(a / b, "x")}`] }; },
-    meaning: "How sensitive operating income is to a change in sales. Caused by fixed operating costs.",
-    tip: "Also DOL = Contribution margin ÷ EBIT. High fixed costs mean high DOL and high business risk." },
-  { id: "dfl", cat: "lev", name: "Degree of financial leverage", unit: "x", better: 0, formula: "% change in EPS ÷ % change in EBIT", added: true, needsPrev: true,
-    calc: x => { if (!x.p) return { v: NaN, steps: ["Needs two years of data."] }; const a = x.c.eps / x.p.eps - 1, b = x.c.ebit / x.p.ebit - 1; return { v: a / b, steps: [`% change in EPS = ${nf2.format(x.c.eps)} ÷ ${nf2.format(x.p.eps)} − 1 = ${fmt(a, "%")}`, `% change in EBIT = ${fmt(b, "%")}`, `DFL = ${fmt(a, "%")} ÷ ${fmt(b, "%")} = ${fmt(a / b, "x")}`] }; },
-    meaning: "How sensitive EPS is to a change in EBIT. Caused by fixed financing costs (interest, preferred dividends).",
-    tip: "Also DFL = EBIT ÷ (EBIT − Interest), when there are no preferred dividends." },
-  { id: "dtl", cat: "lev", name: "Degree of total leverage", unit: "x", better: 0, formula: "DOL × DFL   (= % change in EPS ÷ % change in sales)", added: true, needsPrev: true,
-    calc: x => { const a = val("dol", x), b = val("dfl", x); return { v: a * b, steps: ["DTL = DOL × DFL", `= ${nf2.format(a)} × ${nf2.format(b)} = ${fmt(a * b, "x")}`] }; },
-    meaning: "Combined effect: % change in EPS for a 1% change in sales.",
-    tip: "Example: DOL 2 and DFL 1.5 give DTL 3. A 10% rise in sales gives a 30% rise in EPS." },
+    meaning: "How much debt versus the company's own funds is used to finance assets. Also a measure of debt repayment ability.",
+    tip: "Greater than 1 = more assets funded by liabilities than by equity. Lower = better repayment ability. In the book the ratio fell from 1.46 to 1.25 because preferred stock was issued." },
+  { id: "tie", cat: "solv", name: "Times-interest-earned (interest coverage)", unit: "x", better: 1, ref: "Ex. 10-18", formula: "Earnings before interest and taxes (EBIT) ÷ Interest expense",
+    calc: x => F("Times interest earned", "EBIT", x.c.ebit, "Interest expense", x.c.interest, 1, "x", [`EBIT = Operating income − Other expenses = ${n(x.c.opInc)} − ${n(x.c.other)} = ${n(x.c.ebit)}`]),
+    meaning: "Times pretax earnings cover interest expense. Earnings coverage is a creditor's best measure of ongoing ability to satisfy debts.",
+    tip: "Numerator is EBIT, not net income and not operating income. In the book EBIT ($85,000) is after other income and expenses." },
 
   // PROFITABILITY
-  { id: "gm", cat: "prof", name: "Gross profit margin", unit: "%", better: 1, formula: "(Net sales − COGS) ÷ Net sales",
-    calc: x => F("Gross margin", "Gross profit", x.c.gp, "Net sales", x.c.sales, 1, "%", [`Gross profit = ${n(x.c.sales)} − ${n(x.c.cogs)} = ${n(x.c.gp)}`]),
-    meaning: "Profit left after the direct cost of the goods sold.",
-    tip: "Inventory method matters: in rising prices LIFO gives higher COGS and a LOWER gross margin than FIFO." },
-  { id: "om", cat: "prof", name: "Operating profit margin", unit: "%", better: 1, formula: "EBIT ÷ Net sales",
-    calc: x => F("Operating margin", "EBIT", x.c.ebit, "Net sales", x.c.sales, 1, "%"),
-    meaning: "Profit from core operations, before financing and taxes.",
-    tip: "Not affected by how the company is financed, so it is good for comparing companies with different debt levels." },
-  { id: "ebitdam", cat: "prof", name: "EBITDA margin", unit: "%", better: 1, formula: "EBITDA ÷ Net sales", added: true,
-    calc: x => F("EBITDA margin", "EBITDA", x.c.ebitda, "Net sales", x.c.sales, 1, "%"),
-    meaning: "Operating profit before non-cash depreciation and amortization.",
-    tip: "Removes the effect of depreciation methods, which makes comparisons across companies easier." },
-  { id: "nm", cat: "prof", name: "Net profit margin", unit: "%", better: 1, formula: "Net income ÷ Net sales",
-    calc: x => F("Net margin", "Net income", x.c.ni, "Net sales", x.c.sales, 1, "%"),
-    meaning: "Cents of profit per dollar of sales. The first term of DuPont.",
-    tip: "Net income is AFTER interest and taxes. Do not confuse it with operating margin." },
-  { id: "roa", cat: "prof", name: "Return on assets (ROA)", unit: "%", better: 1, formula: "Net income ÷ Average total assets   (= Net margin × Asset turnover)",
+  { id: "gpm", cat: "prof", name: "Gross profit margin", unit: "%", better: 1, ref: "Ex. 10-19", formula: "Gross profit ÷ Sales",
+    calc: x => F("Gross profit margin", "Gross profit", x.c.gp, "Sales", x.c.sales, 1, "%", [`Gross profit = ${n(x.c.sales)} − ${n(x.c.cogs)} = ${n(x.c.gp)}`]),
+    meaning: "Share of revenue left after the cost of merchandise.",
+    tip: "Key analysis: it should stay stable as sales change. A 10% rise in sales should bring at least a 10% rise in gross profit." },
+  { id: "opm", cat: "prof", name: "Operating profit margin", unit: "%", better: 1, ref: "Ex. 10-19", formula: "Operating income ÷ Sales",
+    calc: x => F("Operating profit margin", "Operating income", x.c.opInc, "Sales", x.c.sales, 1, "%", [`Operating income = Gross profit − SG&A = ${n(x.c.gp)} − ${n(x.c.sga)} = ${n(x.c.opInc)}`]),
+    meaning: "Share left after selling, general and administrative expenses: profit from core activities.",
+    tip: "Operating income is BEFORE non-core income, interest and taxes. Do not use EBIT here when there are other income/expense items." },
+  { id: "nim", cat: "prof", name: "Net income margin", unit: "%", better: 1, ref: "Ex. 10-19", formula: "Net income ÷ Net sales",
+    calc: x => F("Net income margin", "Net income", x.c.ni, "Net sales", x.c.sales, 1, "%"),
+    meaning: "Cents of net profit per dollar of sales.",
+    tip: "A low net margin can still give an acceptable ROE through high asset turnover and financial leverage." },
+  { id: "roi", cat: "prof", name: "Return on investment (ROI)", unit: "%", better: 1, ref: "SU 10.2", formula: "Measure of profit ÷ Measure of capital = Net income ÷ Average invested capital",
+    calc: x => { const a = x.A("invested", "invested capital"); return F("ROI", "Net income", x.c.ni, a.lbl, a.v, 1, "%", ["Invested capital here = Noncurrent liabilities + Total equity", a.step]); },
+    meaning: "How efficiently resources are used to generate profit. If ROI is higher than the cost of capital, the firm is adding shareholder value.",
+    tip: "ROI is a broad concept: the question tells you which measure of capital to use. ROA and ROE are specific forms of ROI." },
+  { id: "roa", cat: "prof", name: "Return on assets (ROA)", unit: "%", better: 1, ref: "SU 10.2", formula: "Net income ÷ Average total assets",
     calc: x => { const a = x.A("ta", "total assets"); return F("ROA", "Net income", x.c.ni, a.lbl, a.v, 1, "%", [a.step]); },
-    meaning: "Profit generated per dollar of assets, however they are financed.",
-    tip: "Some texts add back after-tax interest: [NI + Interest × (1 − t)] ÷ Avg. assets. Use the version the question gives." },
-  { id: "roe", cat: "prof", name: "Return on equity (ROE)", unit: "%", better: 1, formula: "Net income ÷ Average total equity   (= Net margin × Asset turnover × Equity multiplier)",
+    meaning: "The most basic form of ROI: how well management deploys assets to create profit.",
+    tip: "Use AVERAGE total assets: net income covers a whole year, the balance sheet is one moment." },
+  { id: "roe", cat: "prof", name: "Return on equity (ROE)", unit: "%", better: 1, ref: "SU 10.2", formula: "Net income ÷ Average total equity",
     calc: x => { const a = x.A("eq", "total equity"); return F("ROE", "Net income", x.c.ni, a.lbl, a.v, 1, "%", [a.step]); },
-    meaning: "Return earned on the owners' investment.",
-    tip: "ROE above ROA means debt is working in the owners' favor (positive financial leverage)." },
-  { id: "roce", cat: "prof", name: "Return on common equity", unit: "%", better: 1, formula: "(Net income − Preferred dividends) ÷ Average common equity", added: true,
-    calc: x => { const a = x.A("comEq", "common equity"); return F("Return on common equity", "(NI − Pref. div.)", x.c.niCommon, a.lbl, a.v, 1, "%", [a.step]); },
-    meaning: "Return earned for common shareholders only.",
-    tip: "Subtract preferred dividends from the numerator AND remove preferred stock from the denominator." },
-  { id: "roic", cat: "prof", name: "Return on invested capital", unit: "%", better: 1, formula: "EBIT × (1 − tax rate) ÷ Average (Total debt + Total equity)", added: true,
-    calc: x => { const ic = { v: x.useAvg ? ((x.c.debt + x.c.eq) + (x.p.debt + x.p.eq)) / 2 : x.c.debt + x.c.eq }; const nopat = x.c.ebit * (1 - x.c.taxRate); return F("ROIC", "NOPAT", nopat, (x.useAvg ? "avg. " : "") + "invested capital", ic.v, 1, "%", [`Tax rate = ${n(x.c.tax)} ÷ ${n(x.c.ebt)} = ${fmt(x.c.taxRate, "%")}`, `NOPAT = ${n(x.c.ebit)} × (1 − ${nf2.format(x.c.taxRate)}) = ${n(nopat)}`, `Invested capital = Debt + Equity = ${n(ic.v)}`]); },
-    meaning: "After-tax operating return on all capital provided by lenders and owners.",
-    tip: "Compare ROIC with the weighted average cost of capital (WACC). ROIC above WACC creates value." },
+    meaning: "Return to the providers of equity capital. The ultimate purpose of a business is adequate returns to its investors.",
+    tip: "Judicious use of debt (financial leverage) raises ROE above ROA, but too much debt threatens solvency." },
 
-  // MARKET
-  { id: "eps", cat: "mkt", name: "Earnings per share (EPS)", unit: "ps", better: 1, formula: "(Net income − Preferred dividends) ÷ Weighted avg. common shares",
-    calc: x => F("EPS", "(NI − Pref. div.)", x.c.niCommon, "Weighted avg. shares", x.c.shares, 1, "ps"),
-    meaning: "Profit attributable to each common share.",
-    tip: "Use the WEIGHTED AVERAGE shares, not year-end shares. Stock splits and stock dividends are applied retroactively to all periods." },
-  { id: "pe", cat: "mkt", name: "Price-earnings (P/E)", unit: "x", better: 0, formula: "Market price per share ÷ EPS",
-    calc: x => F("P/E", "Price", x.c.price, "EPS", x.c.eps),
-    meaning: "How much investors pay for each dollar of earnings. High P/E usually signals expected growth.",
-    tip: "A stock split does not change the P/E: price and EPS both fall by the same factor." },
-  { id: "ey", cat: "mkt", name: "Earnings yield", unit: "%", better: 0, formula: "EPS ÷ Market price per share", added: true,
-    calc: x => F("Earnings yield", "EPS", x.c.eps, "Price", x.c.price, 1, "%"),
-    meaning: "Earnings return on the share price.",
-    tip: "Earnings yield is the reciprocal of P/E." },
-  { id: "payout", cat: "mkt", name: "Dividend payout ratio", unit: "%", better: 0, formula: "Dividends per share ÷ EPS   (= Common dividends ÷ (NI − Pref. div.))",
-    calc: x => F("Payout ratio", "Common dividends", x.c.comDiv, "(NI − Pref. div.)", x.c.niCommon, 1, "%"),
-    meaning: "Share of earnings paid out to common shareholders.",
-    tip: "Retention ratio = 1 − Payout ratio." },
-  { id: "retention", cat: "mkt", name: "Retention (plowback) ratio", unit: "%", better: 0, formula: "1 − Dividend payout ratio", added: true,
-    calc: x => { const p = val("payout", x); return { v: 1 - p, steps: ["Retention = 1 − Payout", `= 1 − ${nf2.format(p)} = ${fmt(1 - p, "%")}`] }; },
-    meaning: "Share of earnings kept in the business to fund growth.",
-    tip: "Used directly in the sustainable growth formula." },
-  { id: "dy", cat: "mkt", name: "Dividend yield", unit: "%", better: 0, formula: "Dividends per share ÷ Market price per share",
-    calc: x => F("Dividend yield", "DPS", x.c.dps, "Price", x.c.price, 1, "%", [`DPS = ${n(x.c.comDiv)} ÷ ${n(x.c.shares)} = $${nf2.format(x.c.dps)}`]),
-    meaning: "Cash return from dividends on the share price.",
-    tip: "Total shareholder return = Dividend yield + Capital gains yield." },
-  { id: "bvps", cat: "mkt", name: "Book value per share", unit: "ps", better: 1, formula: "Common equity ÷ Common shares outstanding",
-    calc: x => F("Book value per share", "Common equity", x.c.comEq, "Shares", x.c.shares, 1, "ps"),
-    meaning: "Accounting net assets belonging to each common share.",
-    tip: "Exclude preferred stock (and any dividends in arrears) from the numerator." },
-  { id: "pb", cat: "mkt", name: "Price-to-book (market-to-book)", unit: "x", better: 0, formula: "Market price per share ÷ Book value per share",
-    calc: x => F("Price-to-book", "Price", x.c.price, "Book value per share", x.c.bvps),
-    meaning: "Market value compared with accounting value.",
-    tip: "Below 1 means the market values the net assets at less than their book value." },
-  { id: "sgr", cat: "mkt", name: "Sustainable growth rate", unit: "%", better: 1, formula: "Return on common equity × Retention ratio", added: true,
-    calc: x => { const a = val("roce", x), b = val("retention", x); return { v: a * b, steps: ["g = ROE × Retention ratio", `= ${fmt(a, "%")} × ${fmt(b, "%")} = ${fmt(a * b, "%")}`] }; },
-    meaning: "The fastest the company can grow without new equity and without changing its leverage.",
-    tip: "Example: ROE 20% and payout 40% give g = 20% × 60% = 12%." },
+  // INVESTOR & MARKET
+  { id: "pe", cat: "mkt", name: "Price-earnings (P/E) ratio", unit: "x", better: 0, ref: "SU 10.2", formula: "Market price per share ÷ Earnings per share",
+    calc: x => F("P/E", "Market price per share", x.c.price, "EPS", x.c.eps, 1, "x", [`EPS = ${n(x.c.niCommon)} ÷ ${n(x.c.shares)} = $${nf2.format(x.c.eps)}`]),
+    meaning: "What investors are willing to pay for $1 of earnings.",
+    tip: "A high P/E may suggest the stock is overpriced (investors may sell); a low P/E may suggest it is underpriced (investors may buy)." },
+  { id: "eps", cat: "mkt", name: "Earnings per share (EPS)", unit: "ps", better: 1, ref: "SU 10.2", formula: "(Net income − Preferred dividends) ÷ Weighted-average number of common shares outstanding",
+    calc: x => F("EPS", "(NI − Pref. div.)", x.c.niCommon, "Weighted-avg. common shares", x.c.shares, 1, "ps", [`NI − Preferred dividends = ${n(x.c.ni)} − ${n(x.c.prefDiv)} = ${n(x.c.niCommon)}`]),
+    meaning: "Current-period earnings associated with one share of common stock.",
+    tip: "Subtract PREFERRED dividends from the numerator and use the WEIGHTED-AVERAGE number of common shares." },
+  { id: "bvps", cat: "mkt", name: "Book value per common share", unit: "ps", better: 1, ref: "SU 10.2", formula: "(Total equity − Preferred stock) ÷ Common stock outstanding",
+    calc: x => F("Book value per share", "(Total equity − Pref. stock)", x.c.eq - x.c.prefEq, "Common shares outstanding", x.c.shares, 1, "ps", [`Total equity − Preferred stock = ${n(x.c.eq)} − ${n(x.c.prefEq)} = ${n(x.c.eq - x.c.prefEq)}`]),
+    meaning: "Net assets per share that common shareholders would receive if the company were liquidated.",
+    tip: "Subtract PREFERRED STOCK (not preferred dividends) from total equity. Denominator is common shares outstanding." },
 
-  // CASH FLOW
-  { id: "fcf", cat: "cf", name: "Free cash flow", unit: "$", better: 1, formula: "Cash flow from operations − Capital expenditures", added: true,
-    calc: x => ({ v: x.c.fcf, steps: ["FCF = CFO − Capital expenditures", `= ${n(x.c.cfo)} − ${n(x.c.capex)} = ${fmt(x.c.fcf, "$")}`] }),
-    meaning: "Cash left after maintaining and expanding the asset base. Available for debt repayment, dividends and buybacks.",
-    tip: "An amount, not a ratio. Some definitions also subtract dividends." },
-  { id: "capexcov", cat: "cf", name: "Capital expenditure coverage", unit: "x", better: 1, formula: "Cash flow from operations ÷ Capital expenditures", added: true,
-    calc: x => F("Capex coverage", "CFO", x.c.cfo, "Capex", x.c.capex),
-    meaning: "Whether operations fund investment internally.",
-    tip: "Below 1 means investment relies on borrowing, new equity or cash reserves." },
-  { id: "quality", cat: "cf", name: "Quality of earnings", unit: "x", better: 1, formula: "Cash flow from operations ÷ Net income", added: true,
-    calc: x => F("Quality of earnings", "CFO", x.c.cfo, "Net income", x.c.ni),
-    meaning: "How much of reported profit is backed by cash.",
-    tip: "Consistently below 1 can signal aggressive revenue recognition or growing receivables. An internal auditor should look closer." },
-  { id: "cfps", cat: "cf", name: "Operating cash flow per share", unit: "ps", better: 1, formula: "(CFO − Preferred dividends) ÷ Weighted avg. common shares", added: true,
-    calc: x => F("Cash flow per share", "(CFO − Pref. div.)", x.c.cfo - x.c.prefDiv, "Shares", x.c.shares, 1, "ps"),
-    meaning: "Operating cash generated for each common share.",
-    tip: "Harder to manipulate with accruals than EPS." }
+  // DIVIDENDS
+  { id: "payout", cat: "div", name: "Dividend payout ratio", unit: "%", better: 0, ref: "SU 10.2", formula: "Dividends paid per share ÷ Earnings per share  (= Total dividends ÷ Net income)",
+    calc: x => F("Payout ratio", "DPS", x.c.dps, "EPS", x.c.eps, 1, "%", [`DPS = ${n(x.c.comDiv)} ÷ ${n(x.c.shares)} = $${nf2.format(x.c.dps)}`, `EPS = $${nf2.format(x.c.eps)}`, `Check: Total dividends ÷ Net income = ${n(x.c.totalDiv)} ÷ ${n(x.c.ni)} = ${fmt(x.c.totalDiv / x.c.ni, "%")}`]),
+    meaning: "Portion of available earnings actually distributed to shareholders.",
+    tip: "The two forms give the same answer when there are no preferred dividends. 1 − payout ratio = the share of earnings retained." },
+  { id: "dy", cat: "div", name: "Dividend yield ratio", unit: "%", better: 0, ref: "SU 10.2", formula: "Dividends per share ÷ Market price per share",
+    calc: x => F("Dividend yield", "DPS", x.c.dps, "Market price", x.c.price, 1, "%", [`DPS = ${n(x.c.comDiv)} ÷ ${n(x.c.shares)} = $${nf2.format(x.c.dps)}`]),
+    meaning: "Percentage of the share's market price returned as dividends.",
+    tip: "Can be applied to both common and preferred stock. Denominator is MARKET price, not book value." }
 ];
 const RMAP = Object.fromEntries(R.map(r => [r.id, r]));
 function val(id, x) { return RMAP[id].calc(x).v; }
@@ -770,7 +678,10 @@ let D1, D2, X1, X2;
 function recompute() {
   D1 = derive(state.y1, null);
   D2 = derive(state.y2, state.y1);
-  X1 = makeCtx(D1, null);
+  const o = state.y1, P0 = {};
+  if (+o.ar0) P0.ar = +o.ar0; if (+o.inv0) P0.inv = +o.inv0; if (+o.ap0) P0.ap = +o.ap0;
+  D1 = derive(state.y1, P0.inv != null ? P0 : null);
+  X1 = makeCtx(D1, Object.keys(P0).length ? P0 : null);
   X2 = makeCtx(D2, D1);
 }
 
@@ -783,9 +694,9 @@ function deltaChip(r, v1, v2) {
   const cls = r.better === 0 ? "" : (diff > 0) === (r.better > 0) ? "good" : "bad";
   let txt;
   if (r.unit === "%") txt = (diff > 0 ? "+" : "−") + nf1.format(Math.abs(diff) * 100) + " pts";
-  else if (r.unit === "$") txt = (diff > 0 ? "+" : "−") + "$" + nf0.format(Math.abs(diff)) + "k";
+  else if (r.unit === "$") txt = (diff > 0 ? "+" : "−") + "$" + nf0.format(Math.abs(diff));
   else if (r.unit === "days") txt = (diff > 0 ? "+" : "−") + nf1.format(Math.abs(diff)) + " d";
-  else txt = (diff > 0 ? "▲ " : "▼ ") + nf2.format(Math.abs(diff));
+  else txt = (diff > 0 ? "▲ " : "▼ ") + (Math.abs(diff) < 0.1 ? nf3.format(Math.abs(diff)) : nf2.format(Math.abs(diff)));
   return `<span class="delta ${cls}">${txt}</span>`;
 }
 function renderRatios() {
@@ -798,24 +709,26 @@ function renderRatios() {
       <div class="grid">${R.filter(r => r.cat === c.id).map(r => {
         const v2 = r.calc(X2).v, v1 = r.needsPrev ? NaN : r.calc(X1).v;
         return `<button class="rcard" type="button" data-ratio="${r.id}">
-          <span class="row" style="justify-content:space-between;gap:6px"><span class="nm">${esc(r.name)}</span>${r.added ? '<span class="new-badge">added</span>' : ""}</span>
+          <span class="row" style="justify-content:space-between;gap:6px"><span class="nm">${esc(r.name)}</span>${r.ref ? `<span class="new-badge">${esc(r.ref)}</span>` : ""}</span>
           <span class="fm">${esc(r.formula.split("   ")[0])}</span>
           <span class="vals"><span class="big">${fmt(v2, r.unit)}</span>${r.needsPrev ? `<span class="prev">${y1}→${y2} change</span>` : `<span class="prev">${y1}: ${fmt(v1, r.unit)}</span>`}${deltaChip(r, v1, v2)}</span>
         </button>`; }).join("")}</div>
     </div>`).join("");
-  renderDupont();
+  renderCommonSize();
   renderCCC();
 }
-function renderDupont() {
-  const box = (lbl, id, unit, res) => `<div class="dp-box ${res ? "result" : ""}"><div class="eyebrow">${lbl}</div><div class="v">${fmt(val(id, X2), unit)}</div><div class="y1">${esc(state.y1Label)}: ${fmt(val(id, X1), unit)}</div></div>`;
-  const op = s => `<span class="dp-op">${s}</span>`;
-  $("#dupont3").innerHTML = box("Net margin", "nm", "%") + op("×") + box("Asset turnover", "tato", "x") + op("×") + box("Equity multiplier", "em", "x") + op("=") + box("ROE", "roe", "%", true);
-  const tb = x => x.c.ni / x.c.ebt, ib = x => x.c.ebit ? x.c.ebt / x.c.ebit : NaN;
-  const raw = (lbl, f2, f1, unit) => `<div class="dp-box"><div class="eyebrow">${lbl}</div><div class="v">${fmt(f2, unit)}</div><div class="y1">${esc(state.y1Label)}: ${fmt(f1, unit)}</div></div>`;
-  $("#dupont5").innerHTML = raw("Tax burden NI/EBT", tb(X2), tb(X1), "x") + op("×") + raw("Interest burden EBT/EBIT", ib(X2), ib(X1), "x") + op("×") + box("EBIT margin", "om", "%") + op("×") + box("Asset turnover", "tato", "x") + op("×") + box("Equity mult.", "em", "x");
+function renderCommonSize() {
+  const lines = [["Net sales", "sales", 1], ["Cost of goods sold", "cogs", -1], ["Gross profit", "gp", 1, true], ["SG&A expenses", "sga", -1], ["Operating income", "opInc", 1, true],
+    ["Other expenses, net", "other", -1], ["EBIT", "ebit", 1, true], ["Interest expense", "interest", -1], ["Income before taxes", "ebt", 1, true], ["Income taxes", "tax", -1], ["Net income", "ni", 1, true]];
+  const pct = (d, k, sg) => d.sales ? fmtPct(sg * d[k] / d.sales) : "n/a";
+  const fmtPct = v => (v < 0 ? "(" + nf1.format(-v * 100) + "%)" : nf1.format(v * 100) + "%");
+  const growth = k => D1[k] ? (D2[k] / D1[k] - 1) : NaN;
+  $("#commonSize").innerHTML = `<thead><tr><th>Line item</th><th class="n">${esc(state.y2Label)}</th><th class="n">${esc(state.y1Label)}</th><th class="n">Change</th></tr></thead><tbody>${lines.map(([lbl, k, sg, tot]) => {
+    const g = growth(k);
+    return `<tr${tot ? ' class="tot"' : ""}><td>${lbl}</td><td class="n num">${pct(D2, k, sg)}</td><td class="n num">${pct(D1, k, sg)}</td><td class="n num">${isFinite(g) ? (g >= 0 ? "+" : "−") + nf1.format(Math.abs(g) * 100) + "%" : "–"}</td></tr>`; }).join("")}</tbody>`;
 }
 function renderCCC() {
-  const dio = val("dio", X2), dso = val("dso", X2), dpo = val("dpo", X2), ccc = dio + dso - dpo;
+  const dio = val("dsi", X2), dso = val("dsr", X2), dpo = val("dpo", X2), ccc = dio + dso - dpo;
   const svg = $("#cccSvg");
   if (![dio, dso, dpo].every(isFinite) || dio + dso <= 0) { svg.innerHTML = `<text x="10" y="60" fill="currentColor" font-size="12">Not enough data to draw the cycle.</text>`; return; }
   const max = Math.max(dio + dso, dpo), W = 380, s = W / max, x0 = 10;
@@ -824,13 +737,13 @@ function renderCCC() {
   svg.innerHTML = `
     <rect x="${x0}" y="14" width="${dio * s}" height="20" rx="3" fill="var(--accent)"></rect>
     <rect x="${x0 + dio * s}" y="14" width="${dso * s}" height="20" rx="3" fill="var(--warn)"></rect>
-    ${t(x0 + 4, 10, "DIO " + nf1.format(dio))}${t(x0 + (dio + dso) * s - 2, 10, "DSO " + nf1.format(dso), "end")}
+    ${t(x0 + 4, 10, "DSI " + nf1.format(dio))}${t(x0 + (dio + dso) * s - 2, 10, "DSO " + nf1.format(dso), "end")}
     <rect x="${x0}" y="48" width="${dpo * s}" height="20" rx="3" fill="var(--bad)"></rect>
     ${t(x0 + 4, 82, "DPO " + nf1.format(dpo))}
     ${ccc > 0 ? `<rect x="${cccX}" y="92" width="${cccW}" height="12" rx="2" fill="none" stroke="var(--ink)" stroke-dasharray="3 2"></rect>${t(Math.min(cccX + cccW, x0 + W), 118, "CCC " + nf1.format(ccc) + " days", "end")}` : t(x0, 118, "CCC " + nf1.format(ccc) + " days (negative: suppliers fund operations)")}`;
   $("#cccTitle").textContent = `Cash is tied up for ${nf1.format(ccc)} days`;
   const ccc1 = val("ccc", X1);
-  $("#cccNote").innerHTML = `Operating cycle (DIO + DSO) is <span class="num">${nf1.format(dio + dso)}</span> days. Suppliers finance <span class="num">${nf1.format(dpo)}</span> of those days, which leaves the cash conversion cycle. ${isFinite(ccc1) ? `In ${esc(state.y1Label)} it was <span class="num">${nf1.format(ccc1)}</span> days.` : ""} Shorter is better.`;
+  $("#cccNote").innerHTML = `Operating cycle (DSI + DSO) is <span class="num">${nf1.format(dio + dso)}</span> days. Suppliers finance <span class="num">${nf1.format(dpo)}</span> of those days, which leaves the cash conversion cycle. ${isFinite(ccc1) ? `${esc(state.y1Label)}: <span class="num">${nf1.format(ccc1)}</span> days.` : ""} Shorter is better.`;
 }
 
 /* drawer */
@@ -840,14 +753,14 @@ function openRatio(id) {
   const cat = CATS.find(c => c.id === r.cat);
   const dir = r.better > 0 ? "Higher is generally better" : r.better < 0 ? "Lower is generally better" : "Neither higher nor lower is automatically better: interpret in context";
   $("#drawer").innerHTML = `
-    <div class="drawer-head"><div><span class="eyebrow">${esc(cat.name)}${r.added ? " · added ratio" : ""}</span><h2 id="dTitle">${esc(r.name)}</h2></div><button class="close" type="button" id="dClose" aria-label="Close">×</button></div>
+    <div class="drawer-head"><div><span class="eyebrow">${esc(cat.name)}${r.ref ? " · Gleim " + esc(r.ref) : ""}</span><h2 id="dTitle">${esc(r.name)}</h2></div><button class="close" type="button" id="dClose" aria-label="Close">×</button></div>
     <div><span class="formula">${esc(r.formula)}</span></div>
     <div class="yrs">
       <div class="yr"><div class="eyebrow">${esc(state.y2Label)}</div><div class="v">${fmt(c2.v, r.unit)}</div></div>
       ${c1 ? `<div class="yr"><div class="eyebrow">${esc(state.y1Label)}</div><div class="v">${fmt(c1.v, r.unit)}</div></div>` : ""}
     </div>
     <div class="kv"><span class="eyebrow">Worked calculation · ${esc(state.y2Label)}</span><div class="steps">${c2.steps.map(s => `<div>${esc(s)}</div>`).join("")}</div></div>
-    ${c1 ? `<div class="kv"><span class="eyebrow">Worked calculation · ${esc(state.y1Label)}${settings.avg && !r.needsPrev ? " (ending balances: no earlier year to average)" : ""}</span><div class="steps">${c1.steps.map(s => `<div>${esc(s)}</div>`).join("")}</div></div>` : ""}
+    ${c1 ? `<div class="kv"><span class="eyebrow">Worked calculation · ${esc(state.y1Label)}</span><div class="steps">${c1.steps.map(s => `<div>${esc(s)}</div>`).join("")}</div></div>` : ""}
     <div class="kv"><span class="eyebrow">What it tells you</span><p>${esc(r.meaning)}</p><p class="small muted">${dir}.${r.rule ? " " + esc(r.rule) : ""}</p></div>
     <div class="tipbox"><b>CIA exam tip.</b> ${esc(r.tip)}</div>`;
   lastFocus = document.activeElement;
@@ -868,9 +781,10 @@ function syncToggles() {
 
 /* ---------- DATA tab ---------- */
 const TOTALS_AFTER = {
-  comDiv: [["Gross profit", "gp"], ["EBITDA", "ebitda"], ["Operating income (EBIT)", "ebit"], ["Earnings before tax", "ebt"], ["Net income", "ni"]],
-  prepaid: [["Total current assets", "ca"]], otherA: [["Total assets", "ta"]], std: [["Total current liabilities", "cl"]],
-  otherL: [["Total liabilities", "tl"]], comEq: [["Total equity", "eq"], ["Total liabilities & equity", null]], capex: [["Free cash flow", "fcf"]]
+  tax: [["Gross profit", "gp"], ["Operating income", "opInc"], ["Earnings before interest & taxes (EBIT)", "ebit"], ["Income before taxes", "ebt"], ["Net income", "ni"]],
+  prepaid: [["Total current assets", "ca"]], otherNCA: [["Total assets", "ta"]], otherCL: [["Total current liabilities", "cl"]],
+  ncl: [["Total liabilities", "tl"]], comEq: [["Total stockholders' equity", "eq"], ["Total liabilities & equity", null]],
+  price: [["Total purchases (COGS + ending inv. − beginning inv.)", "purchases"], ["Earnings per share ($)", "eps"]]
 };
 function renderDataTable() {
   const rows = [`<thead><tr><th>Line item</th><th class="n">${esc(state.y1Label)}</th><th class="n">${esc(state.y2Label)}</th></tr></thead><tbody>`];
@@ -879,7 +793,7 @@ function renderDataTable() {
     g.items.forEach(([k, lbl]) => {
       rows.push(`<tr><td><label for="in-y1-${k}">${esc(lbl)}</label></td>
         <td class="n"><input id="in-y1-${k}" data-y="y1" data-k="${k}" inputmode="decimal" value="${state.y1[k] ?? ""}"></td>
-        <td class="n"><input id="in-y2-${k}" data-y="y2" data-k="${k}" inputmode="decimal" value="${state.y2[k] ?? ""}" aria-label="${esc(lbl)} ${esc(state.y2Label)}"></td></tr>`);
+        <td class="n">${g.openOnly ? '<span class="muted">–</span>' : `<input id="in-y2-${k}" data-y="y2" data-k="${k}" inputmode="decimal" value="${state.y2[k] ?? ""}" aria-label="${esc(lbl)} ${esc(state.y2Label)}">`}</td></tr>`);
       (TOTALS_AFTER[k] || []).forEach(([t, dk]) => rows.push(`<tr class="tot"><td>${t}</td><td class="n" data-tot="${dk || "tle"}" data-y="1"></td><td class="n" data-tot="${dk || "tle"}" data-y="2"></td></tr>`));
     });
   });
@@ -890,13 +804,13 @@ function renderDataTable() {
 function updateTotals() {
   document.querySelectorAll("[data-tot]").forEach(td => {
     const d = td.dataset.y === "1" ? D1 : D2, k = td.dataset.tot;
-    td.textContent = n(k === "tle" ? d.tl + d.eq : d[k]);
+    td.textContent = k === "eps" ? fmt(d.eps, "ps") : n(k === "tle" ? d.tl + d.eq : d[k]);
   });
   const bad = [[state.y1Label, D1], [state.y2Label, D2]].filter(([, d]) => Math.abs(d.imbalance) > 0.5);
   $("#balanceCheck").innerHTML = bad.length
     ? bad.map(([y, d]) => `<div class="status err">${esc(y)}: total assets (${n(d.ta)}) do not equal liabilities + equity (${n(d.tl + d.eq)}). Difference ${n(d.imbalance)}. Ratios still calculate, but check the balance sheet.</div>`).join("")
     : `<div class="status ok">Both balance sheets balance: assets = liabilities + equity.</div>`;
-  $("#balanceCheck").insertAdjacentHTML("beforeend", `<p class="small muted">Net income ${esc(state.y2Label)}: <span class="num">${n(D2.ni)}</span> · EPS <span class="num">${fmt(D2.eps, "ps")}</span> · tax rate <span class="num">${fmt(D2.taxRate, "%")}</span></p>`);
+  $("#balanceCheck").insertAdjacentHTML("beforeend", `<p class="small muted">Net income ${esc(state.y2Label)}: <span class="num">${n(D2.ni)}</span> · EPS <span class="num">${fmt(D2.eps, "ps")}</span> · tax rate <span class="num">${fmt(D2.tax / D2.ebt, "%")}</span></p>`);
 }
 $("#dataTable").addEventListener("input", e => {
   const i = e.target; if (!i.dataset.k) return;
@@ -925,27 +839,29 @@ function renderCompany() {
 
 /* ---------- TRANSACTION LAB ---------- */
 const TXNS = [
-  { id: "pay_ap", name: "Pay accounts payable with cash", je: ["Dr Accounts payable", "Cr Cash"], f: (r, X) => { r.ap -= X; r.cash -= X; }, note: "Both current assets and current liabilities fall by the same amount. Working capital is unchanged, but the current ratio rises when it starts above 1 and falls when it starts below 1." },
-  { id: "inv_credit", name: "Buy inventory on credit", je: ["Dr Inventory", "Cr Accounts payable"], f: (r, X) => { r.inv += X; r.ap += X; }, note: "Current assets and current liabilities rise equally. Quick assets do not change while current liabilities rise, so the quick ratio falls." },
-  { id: "inv_cash", name: "Buy inventory for cash", je: ["Dr Inventory", "Cr Cash"], f: (r, X) => { r.inv += X; r.cash -= X; }, note: "One current asset replaces another. The current ratio is unchanged, but the quick ratio falls because cash becomes inventory." },
-  { id: "collect", name: "Collect accounts receivable", je: ["Dr Cash", "Cr Accounts receivable"], f: (r, X) => { r.cash += X; r.ar -= X; }, note: "Cash and receivables are both quick assets, so the current and quick ratios are unchanged. Only the cash ratio rises." },
-  { id: "sell_credit", name: "Sell inventory on credit at a 25% markup on cost", je: ["Dr Accounts receivable (1.25 × amount)", "Cr Sales", "Dr Cost of goods sold (amount)", "Cr Inventory"], f: (r, X) => { r.ar += 1.25 * X; r.sales += 1.25 * X; r.inv -= X; r.cogs += X; r.comEq += 0.25 * X; }, note: "Current assets rise by the profit on the sale (taxes ignored here). Receivables rise by the full selling price, so the quick ratio rises more. Equity rises through retained earnings." },
-  { id: "borrow_st", name: "Borrow short-term from a bank", je: ["Dr Cash", "Cr Notes payable (current)"], f: (r, X) => { r.cash += X; r.std += X; }, note: "Equal increase in current assets and current liabilities: moves the current ratio toward 1 (down if it was above 1)." },
-  { id: "issue_ltd", name: "Issue long-term bonds for cash", je: ["Dr Cash", "Cr Bonds payable (long-term)"], f: (r, X) => { r.cash += X; r.ltd += X; }, note: "Current assets rise with no change in current liabilities, so liquidity improves. Leverage ratios worsen." },
-  { id: "repay_ltd", name: "Repay long-term debt with cash", je: ["Dr Long-term debt", "Cr Cash"], f: (r, X) => { r.ltd -= X; r.cash -= X; }, note: "Liquidity ratios fall because cash leaves while current liabilities stay the same. The debt ratio usually falls." },
-  { id: "ppe_cash", name: "Buy equipment for cash", je: ["Dr Equipment", "Cr Cash"], f: (r, X) => { r.ppe += X; r.cash -= X; }, note: "A current asset becomes a non-current asset: all liquidity ratios fall. Total assets are unchanged, so the debt ratio is unchanged." },
-  { id: "ppe_note", name: "Buy equipment with a long-term note", je: ["Dr Equipment", "Cr Notes payable (long-term)"], f: (r, X) => { r.ppe += X; r.ltd += X; }, note: "No current accounts change, so liquidity ratios are unchanged. Debt ratio and D/E rise." },
-  { id: "issue_stock", name: "Issue common stock for cash", je: ["Dr Cash", "Cr Common stock / APIC"], f: (r, X) => { r.cash += X; r.comEq += X; r.shares += r.price ? X / r.price : 0; }, note: "Liquidity improves and leverage falls. More shares mean lower EPS (new shares counted immediately here for simplicity)." },
-  { id: "declare_div", name: "Declare a cash dividend (not yet paid)", je: ["Dr Retained earnings", "Cr Dividends payable"], f: (r, X) => { r.comEq -= X; r.accrued += X; }, note: "Declaration creates a current liability, so the current and quick ratios fall. Equity falls, so leverage rises." },
-  { id: "pay_div", name: "Pay a dividend that was already declared", je: ["Dr Dividends payable", "Cr Cash"], f: (r, X) => { r.accrued -= X; r.cash -= X; }, note: "Like paying any current liability with cash: no effect on working capital; the current ratio moves away from 1." },
-  { id: "writeoff", name: "Write off an uncollectible receivable (allowance method)", je: ["Dr Allowance for doubtful accounts", "Cr Accounts receivable"], f: () => {}, note: "Net receivables do not change: both the allowance and gross receivables fall by the same amount. Nothing changes. The expense was recorded earlier, when the allowance was set up." },
-  { id: "prepay", name: "Prepay insurance with cash", je: ["Dr Prepaid insurance", "Cr Cash"], f: (r, X) => { r.prepaid += X; r.cash -= X; }, note: "The current ratio is unchanged because prepaids are current assets. The quick ratio falls because prepaids are not quick assets." },
-  { id: "reclass", name: "Reclassify long-term debt to current portion", je: ["Dr Long-term debt", "Cr Current portion of long-term debt"], f: (r, X) => { r.ltd -= X; r.std += X; }, note: "Current liabilities rise, so liquidity ratios fall. Total liabilities are unchanged, so the debt ratio is unchanged." },
-  { id: "buyback", name: "Buy back own shares (treasury stock) for cash", je: ["Dr Treasury stock", "Cr Cash"], f: (r, X) => { r.cash -= X; r.comEq -= X; r.shares -= r.price ? X / r.price : 0; }, note: "Equity and cash fall: liquidity falls and leverage rises. Fewer shares raise EPS (counted immediately here for simplicity)." }
+  { id: "pay_ap", name: "Pay accounts payable with cash", je: ["Dr Accounts payable", "Cr Cash"], f: (r, X) => { r.ap -= X; r.cash -= X; }, note: "Current assets and current liabilities fall by the same amount. Net working capital is unchanged, but the current ratio rises when it starts above 1 and falls when it starts below 1. Delaying this payment until after year-end is a form of window dressing." },
+  { id: "inv_credit", name: "Buy inventory on credit", je: ["Dr Inventories", "Cr Accounts payable"], f: (r, X) => { r.inv += X; r.ap += X; }, note: "Current assets and current liabilities rise equally. Quick assets do not change while current liabilities rise, so the quick ratio falls." },
+  { id: "inv_cash", name: "Buy inventory for cash", je: ["Dr Inventories", "Cr Cash"], f: (r, X) => { r.inv += X; r.cash -= X; }, note: "One current asset replaces another, so the current ratio is unchanged. The quick ratio falls because cash becomes inventory." },
+  { id: "collect", name: "Collect accounts receivable", je: ["Dr Cash", "Cr Accounts receivable"], f: (r, X) => { r.cash += X; r.ar -= X; }, note: "Cash and receivables are both quick assets, so the current and quick ratios are unchanged." },
+  { id: "sell_credit", name: "Sell inventory on credit at a 25% markup on cost", je: ["Dr Accounts receivable (1.25 × amount)", "Cr Sales", "Dr Cost of goods sold (amount)", "Cr Inventories"], f: (r, X) => { r.ar += 1.25 * X; r.sales += 1.25 * X; r.inv -= X; r.cogs += X; r.comEq += 0.25 * X; }, note: "Current assets rise by the profit on the sale (taxes ignored here). Receivables rise by the full selling price, so the quick ratio rises more. Equity rises through retained earnings." },
+  { id: "borrow_st", name: "Borrow on a short-term note payable", je: ["Dr Cash", "Cr Notes payable (current)"], f: (r, X) => { r.cash += X; r.otherCL += X; }, note: "Equal increase in current assets and current liabilities moves the current ratio toward 1 (down if it was above 1)." },
+  { id: "issue_ltd", name: "Issue long-term bonds for cash", je: ["Dr Cash", "Cr Bonds payable"], f: (r, X) => { r.cash += X; r.ncl += X; }, note: "Current assets rise with no change in current liabilities, so liquidity improves. Solvency ratios worsen: more liabilities." },
+  { id: "repay_ltd", name: "Repay long-term debt with cash", je: ["Dr Bonds payable", "Cr Cash"], f: (r, X) => { r.ncl -= X; r.cash -= X; }, note: "Liquidity ratios fall because cash leaves while current liabilities stay the same. The debt ratio falls." },
+  { id: "ppe_cash", name: "Buy equipment for cash", je: ["Dr Property, plant & equipment", "Cr Cash"], f: (r, X) => { r.ppe += X; r.cash -= X; }, note: "A current asset becomes a noncurrent asset, so all liquidity ratios fall. Total assets are unchanged, so the debt ratio is unchanged." },
+  { id: "ppe_note", name: "Buy equipment with a long-term note", je: ["Dr Property, plant & equipment", "Cr Long-term notes payable"], f: (r, X) => { r.ppe += X; r.ncl += X; }, note: "No current accounts change, so the current and quick ratios are unchanged. The NWC ratio falls slightly because total assets grow. Debt ratio and D/E rise." },
+  { id: "issue_stock", name: "Issue common stock for cash", je: ["Dr Cash", "Cr Common stock / APIC"], f: (r, X) => { r.cash += X; r.comEq += X; r.shares += r.price ? X / r.price : 0; }, note: "Liquidity improves and leverage falls. More shares mean lower EPS (new shares counted in full here for simplicity)." },
+  { id: "issue_pref", name: "Issue preferred stock for cash", je: ["Dr Cash", "Cr Preferred stock"], f: (r, X) => { r.cash += X; r.prefEq += X; }, note: "This is what happened in the book's example: D/E fell from 1.46 to 1.25. Book value per COMMON share does not change because preferred stock is subtracted." },
+  { id: "declare_div", name: "Declare a cash dividend (not yet paid)", je: ["Dr Retained earnings", "Cr Dividends payable"], f: (r, X) => { r.comEq -= X; r.otherCL += X; }, note: "Declaration creates a current liability, so the current and quick ratios fall. Equity falls, so leverage rises." },
+  { id: "pay_div", name: "Pay a dividend that was already declared", je: ["Dr Dividends payable", "Cr Cash"], f: (r, X) => { r.otherCL -= X; r.cash -= X; }, note: "Like paying any current liability with cash: net working capital is unchanged and the current ratio moves away from 1." },
+  { id: "writeoff", name: "Write off an uncollectible receivable (allowance method)", je: ["Dr Allowance for expected credit losses", "Cr Accounts receivable"], f: () => {}, note: "Net receivables do not change because the allowance and gross receivables fall equally. No ratio changes. The expense was recorded when the allowance was estimated." },
+  { id: "prepay", name: "Prepay insurance with cash", je: ["Dr Prepaid expenses", "Cr Cash"], f: (r, X) => { r.prepaid += X; r.cash -= X; }, note: "The current ratio is unchanged because prepaids are current assets. The quick ratio falls because prepaid items are excluded from quick assets." },
+  { id: "reclass", name: "Reclassify long-term debt to current maturities", je: ["Dr Bonds payable", "Cr Current maturities of L.T. debt"], f: (r, X) => { r.ncl -= X; r.otherCL += X; }, note: "Current liabilities rise, so liquidity ratios fall. Total liabilities are unchanged, so the debt ratio is unchanged." },
+  { id: "buyback", name: "Buy back own shares (treasury stock) for cash", je: ["Dr Treasury stock", "Cr Cash"], f: (r, X) => { r.cash -= X; r.comEq -= X; r.shares -= r.price ? X / r.price : 0; }, note: "Equity and cash fall: liquidity falls and leverage rises. Fewer shares raise EPS (counted in full here for simplicity)." }
 ];
 const LAB_RATIOS = [
-  ["Current ratio", d => d.ca / d.cl, "x"], ["Quick ratio", d => d.quick / d.cl, "x"], ["Cash ratio", d => (d.cash + d.sec) / d.cl, "x"],
-  ["Net working capital", d => d.nwc, "$"], ["Debt ratio", d => d.tl / d.ta, "%"], ["Debt-to-equity", d => d.tl / d.eq, "x"], ["EPS", d => d.eps, "ps"]
+  ["Current ratio", d => d.ca / d.cl, "x"], ["Quick ratio", d => d.quick / d.cl, "x"], ["Net working capital", d => d.nwc, "$"],
+  ["NWC ratio", d => d.nwc / d.ta, "x"], ["Debt ratio", d => d.tl / d.ta, "x"], ["Debt-to-equity", d => d.tl / d.eq, "x"],
+  ["EPS", d => d.eps, "ps"], ["Book value per common share", d => d.bvps, "ps"]
 ];
 let labTxn = "pay_ap", guesses = {};
 function labResult(txnId, X) {
@@ -1007,92 +923,116 @@ document.addEventListener("keydown", e => {
 function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 /* ---------- QUIZ ---------- */
-const QTOPICS = { liq: "Liquidity", act: "Activity", lev: "Leverage", prof: "Profitability", mkt: "Market", cf: "Cash flow", txn: "Transactions", gen: "Analysis concepts" };
+const QTOPICS = { liq: "Liquidity", act: "Activity", solv: "Solvency", prof: "Profitability", mkt: "Investor & market", div: "Dividends", txn: "Transactions", gen: "Analysis concepts" };
 const BANK = [
-  { t: "liq", q: "The quick (acid-test) ratio differs from the current ratio because the quick ratio excludes:", o: ["Inventory and prepaid expenses", "Accounts receivable and inventory", "Marketable securities and prepaid expenses", "Only cash equivalents"], a: 0, e: "Quick assets are cash, marketable securities and receivables. Inventory and prepaids are excluded because they cannot be turned into cash quickly." },
-  { t: "txn", q: "A company with a current ratio of 2.0 uses cash to pay an account payable. Its current ratio will:", o: ["Increase", "Decrease", "Stay the same", "Fall to 1.0"], a: 0, e: "Example: 200/100 = 2.0. Pay 50: 150/50 = 3.0. When the ratio is above 1, subtracting the same amount from both sides raises it." },
-  { t: "txn", q: "A company with a current ratio of 0.8 uses cash to pay an account payable. Its current ratio will:", o: ["Decrease", "Increase", "Stay the same", "Rise above 1.0"], a: 0, e: "Example: 80/100 = 0.8. Pay 40: 40/60 = 0.67. Below 1, equal subtraction lowers the ratio." },
+  // liquidity
+  { t: "liq", q: "The quick (acid-test) ratio excludes which items from the numerator?", o: ["Inventories and prepaid items", "Accounts receivable and inventories", "Marketable securities and prepaid items", "Notes receivable only"], a: 0, e: "Quick ratio = (Cash & equivalents + ST marketable securities + Net receivables) ÷ Current liabilities. Inventories and prepaids are hard to liquidate at their carrying amounts." },
+  { t: "liq", q: "Current assets are $760,000, current liabilities $390,000 and total assets $1,800,000. The net working capital ratio is:", o: ["0.206", "1.95", "0.475", "0.217"], a: 0, e: "NWC ratio = (760,000 − 390,000) ÷ 1,800,000 = 0.206 (Gleim Example 10-6)." },
+  { t: "liq", q: "Cash flows from operations are $382,000 and current liabilities are $390,000. The cash flow ratio is:", o: ["0.979", "1.021", "0.833", "1.95"], a: 0, e: "Cash flow ratio = CFO ÷ Current liabilities = 382,000 ÷ 390,000 = 0.979 (Example 10-8). Operating cash flow did not fully cover current liabilities." },
+  { t: "liq", q: "Which business could most reasonably operate with the LOWEST current ratio?", o: ["A grocery store", "A gold mining company", "A shipbuilder", "A winery that ages its products"], a: 0, e: "The current ratio should be proportional to the operating cycle. A grocery store has a very short operating cycle." },
+  { t: "liq", q: "Before relying on a strong current ratio, an internal auditor should first consider:", o: ["The quality of receivables and inventory", "The company's dividend policy", "The P/E ratio", "The debt-to-equity ratio"], a: 0, e: "Obsolete or overvalued inventory or receivables can artificially inflate the current ratio." },
+  { t: "liq", q: "An overly high current ratio most likely indicates:", o: ["Inefficient working capital management", "A high risk of insolvency", "Excessive use of debt", "Strong profitability"], a: 0, e: "A higher ratio means better ability to pay short-term debts, but too high suggests idle resources tied up in current assets." },
+  { t: "liq", q: "Which liquidity measure is the MOST conservative?", o: ["Cash flow ratio", "Current ratio", "Quick ratio", "Net working capital"], a: 0, e: "The book describes the cash (flow) ratio as even more conservative than the quick ratio, though less commonly used." },
+  // activity
+  { t: "act", q: "Net credit sales are $1,800,000. Accounts receivable were $115,000 at the start and $120,000 at the end of the year. A/R turnover is:", o: ["15.3 times", "15.0 times", "15.7 times", "12.7 times"], a: 0, e: "1,800,000 ÷ [(120,000 + 115,000) ÷ 2] = 1,800,000 ÷ 117,500 = 15.3 times (Example 10-9). 15.0 uses ending A/R." },
+  { t: "act", q: "Accounts receivable turnover is 15.3 times. Using a 365-day year, days' sales in receivables is:", o: ["23.9 days", "15.3 days", "28.7 days", "24.3 days"], a: 0, e: "365 ÷ 15.3 = 23.9 days (Example 10-10)." },
+  { t: "act", q: "COGS is $1,450,000. Inventory was $55,000 at the start and $85,000 at the end of the year. Inventory turnover is:", o: ["20.7 times", "17.1 times", "25.7 times", "21.2 times"], a: 0, e: "1,450,000 ÷ [(85,000 + 55,000) ÷ 2] = 1,450,000 ÷ 70,000 = 20.7 times (Example 10-11). 17.1 uses ending inventory." },
+  { t: "act", q: "Purchases are $1,480,000. Accounts payable were $75,000 at the start and $150,000 at the end of the year. A/P turnover is:", o: ["13.2 times", "9.9 times", "12.9 times", "19.7 times"], a: 0, e: "1,480,000 ÷ [(150,000 + 75,000) ÷ 2] = 1,480,000 ÷ 112,500 = 13.2 times (Example 10-13). The numerator is total PURCHASES." },
+  { t: "act", q: "Days' sales in inventory is 17.6, days' sales outstanding is 23.9 and days' payables outstanding is 27.7. The cash conversion cycle is:", o: ["13.8 days", "41.5 days", "69.2 days", "6.2 days"], a: 0, e: "17.6 + 23.9 − 27.7 = 13.8 days (Example 10-15)." },
+  { t: "act", q: "For which turnover ratio can a HIGH value indicate inefficiency?", o: ["Accounts payable turnover", "Inventory turnover", "Accounts receivable turnover", "Total asset turnover"], a: 0, e: "A high payables turnover may mean the organization is not taking full advantage of credit facilities available to it." },
+  { t: "act", q: "A company's business is highly seasonal. To calculate average accounts receivable it should:", o: ["Average the monthly balances", "Use the year-end balance", "Average the beginning and ending balances", "Use the highest balance of the year"], a: 0, e: "For a highly seasonal business a simple average of beginning and ending balances is inadequate." },
+  { t: "act", q: "Inventory turnover fell during a year of strongly growing sales. The best conclusion is:", o: ["It is not necessarily a sign of poor inventory management", "Inventory is definitely obsolete", "Sales were recorded incorrectly", "The company should cut inventory immediately"], a: 0, e: "A lower turnover is expected during a period of growing sales and increasing inventory (Example 10-11)." },
+  { t: "act", q: "Offering customers credit terms of 2/10, net 30 will most likely:", o: ["Increase accounts receivable turnover", "Decrease accounts receivable turnover", "Increase days' sales in receivables", "Have no effect on receivables"], a: 0, e: "Customers pay faster, receivables (the denominator) fall and turnover rises." },
+  { t: "act", q: "Managing balances to desired levels at year-end, such as delaying payments to boost bank balances, is called:", o: ["Window dressing", "Benchmarking", "Trend analysis", "Earnings coverage"], a: 0, e: "Window dressing makes year-end balances unrepresentative of the typical level during the year." },
+  // solvency
+  { t: "solv", q: "Total liabilities are $1,000,000 and total assets are $1,800,000. The debt ratio is:", o: ["0.556", "1.25", "0.444", "1.80"], a: 0, e: "1,000,000 ÷ 1,800,000 = 0.556 (Example 10-16)." },
+  { t: "solv", q: "Total liabilities are $1,000,000 and total stockholders' equity is $800,000. The debt-to-equity ratio is:", o: ["1.25", "0.80", "0.556", "2.25"], a: 0, e: "1,000,000 ÷ 800,000 = 1.25 (Example 10-17)." },
+  { t: "solv", q: "A debt-to-equity ratio greater than 1 means the company:", o: ["Funds more of its assets through liabilities than through equity", "Is insolvent", "Has more current assets than current liabilities", "Earns more than its interest expense"], a: 0, e: "Liabilities exceed equity. A lower ratio means better debt repayment ability." },
+  { t: "solv", q: "EBIT is $85,000, interest expense is $15,000 and net income is $42,000. Times-interest-earned is:", o: ["5.67", "2.80", "4.67", "10.0"], a: 0, e: "TIE = EBIT ÷ Interest = 85,000 ÷ 15,000 = 5.67 (Example 10-18). 2.80 wrongly uses net income." },
+  { t: "solv", q: "A creditor's best measure of an entity's ongoing ability to generate earnings to satisfy its debts is:", o: ["Earnings coverage (times-interest-earned)", "The current ratio", "The dividend payout ratio", "Book value per share"], a: 0, e: "The book calls earnings coverage the creditor's best measure of ongoing solvency." },
+  { t: "solv", q: "Issuing preferred stock for cash will:", o: ["Decrease the debt-to-equity ratio", "Increase the debt-to-equity ratio", "Increase the debt ratio", "Decrease the current ratio"], a: 0, e: "Equity rises with no change in liabilities. In the book D/E fell from 1.46 to 1.25 for this reason." },
+  { t: "solv", q: "Why can debt be a better source of finance than equity?", o: ["Interest is tax deductible and debt is cheaper than equity", "Debt never has to be repaid", "Debt holders are paid last in liquidation", "Debt increases the debt ratio"], a: 0, e: "Shareholders bear more risk (paid last), so they expect a higher return. Too much debt still threatens solvency." },
+  { t: "solv", q: "Operating leverage refers to:", o: ["The extent to which operating costs are fixed rather than variable", "The amount of debt in the capital structure", "The ratio of current assets to current liabilities", "The number of shares outstanding"], a: 0, e: "Financial leverage is the degree of debt (fixed financial costs); operating leverage is fixed vs. variable operating costs." },
+  // profitability
+  { t: "prof", q: "Gross profit is $350,000 and sales are $1,800,000. Gross profit margin is:", o: ["19.4%", "8.3%", "2.3%", "24.1%"], a: 0, e: "350,000 ÷ 1,800,000 = 19.4% (Example 10-19)." },
+  { t: "prof", q: "Sales rise 10% but gross profit rises only 4%. This means:", o: ["The gross profit margin fell, which needs investigation", "The gross profit margin rose", "Operating efficiency improved", "Nothing; margins always change with sales"], a: 0, e: "The gross profit margin should stay relatively constant at different sales levels: a 10% rise in sales should bring at least a 10% rise in gross profit." },
+  { t: "prof", q: "Operating profit margin uses which numerator?", o: ["Operating income, after SG&A but before non-core items, interest and taxes", "Net income", "Gross profit", "Income before taxes"], a: 0, e: "Operating profit margin = Operating income ÷ Sales: 150,000 ÷ 1,800,000 = 8.3% in the book." },
+  { t: "prof", q: "A firm's ROI is higher than its cost of capital. This indicates that:", o: ["Its activities are adding to shareholder value", "It is overleveraged", "It should stop investing", "Its liquidity is weak"], a: 0, e: "ROI = Measure of profit ÷ Measure of capital. Above the cost of capital, value is created." },
+  { t: "prof", q: "Net income is $42,000. Total assets were $1,600,000 at the start and $1,800,000 at the end of the year. ROA is:", o: ["2.47%", "2.33%", "2.63%", "5.25%"], a: 0, e: "ROA = 42,000 ÷ [(1,600,000 + 1,800,000) ÷ 2] = 42,000 ÷ 1,700,000 = 2.47%. 2.33% uses ending assets." },
+  { t: "prof", q: "Net income is $42,000. Total equity was $650,000 at the start and $800,000 at the end of the year. ROE is:", o: ["5.79%", "5.25%", "6.46%", "2.47%"], a: 0, e: "ROE = 42,000 ÷ [(650,000 + 800,000) ÷ 2] = 42,000 ÷ 725,000 = 5.79%." },
+  { t: "prof", q: "An organization has a low net profit percentage but an acceptable return on equity. This is most likely due to:", o: ["High asset turnover and use of financial leverage", "A high gross margin", "Low inventory turnover", "A high current ratio"], a: 0, e: "The book notes that low margins can be offset by high asset turnover and financial leverage." },
+  // market & dividends
+  { t: "mkt", q: "Net income is $500,000, preferred dividends are $50,000 and the weighted-average common shares are 100,000. EPS is:", o: ["$4.50", "$5.00", "$5.50", "$4.09"], a: 0, e: "EPS = (500,000 − 50,000) ÷ 100,000 = $4.50." },
+  { t: "mkt", q: "Total equity is $800,000, including $130,000 of preferred stock. Common shares outstanding are 500,000. Book value per common share is:", o: ["$1.34", "$1.60", "$1.86", "$0.26"], a: 0, e: "(800,000 − 130,000) ÷ 500,000 = $1.34." },
+  { t: "mkt", q: "A stock has a much higher P/E ratio than similar companies. According to the book this may suggest:", o: ["The stock is overpriced and investors may wish to sell", "The stock is underpriced and investors may wish to buy", "The company has high debt", "The company pays high dividends"], a: 0, e: "P/E = Price ÷ EPS: what investors pay for $1 of earnings. High may be overpriced, low may be underpriced." },
+  { t: "mkt", q: "The market price per share is $30 and EPS is $2.50. The P/E ratio is:", o: ["12.0", "0.083", "75.0", "27.5"], a: 0, e: "30 ÷ 2.50 = 12." },
+  { t: "mkt", q: "The EPS denominator should be:", o: ["The weighted-average number of common shares outstanding", "Common shares outstanding at year-end", "Authorized common shares", "Common plus preferred shares"], a: 0, e: "EPS = (Net income − Preferred dividends) ÷ Weighted-average common shares outstanding." },
+  { t: "div", q: "Dividends per share are $1.20 and EPS is $3.00. The dividend payout ratio is:", o: ["40%", "60%", "250%", "36%"], a: 0, e: "Payout = DPS ÷ EPS = 1.20 ÷ 3.00 = 40%." },
+  { t: "div", q: "Dividends per share are $2.00 and the market price per share is $40. The dividend yield is:", o: ["5%", "20%", "2%", "50%"], a: 0, e: "Dividend yield = DPS ÷ Market price = 2 ÷ 40 = 5%." },
+  { t: "div", q: "The dividend yield ratio can be applied to:", o: ["Both common and preferred stock", "Common stock only", "Preferred stock only", "Bonds only"], a: 0, e: "The book states it can be applied to both common and preferred stock." },
+  { t: "div", q: "Total dividends are $22,000 and net income is $42,000 (no preferred dividends). The payout ratio is:", o: ["52.4%", "47.6%", "190.9%", "5.2%"], a: 0, e: "Payout = Total dividends ÷ Net income = 22,000 ÷ 42,000 = 52.4%." },
+  // transactions
+  { t: "txn", q: "A company with a current ratio of 2.0 uses cash to pay an account payable. Its current ratio will:", o: ["Increase", "Decrease", "Stay the same", "Fall to 1.0"], a: 0, e: "200/100 = 2.0. Pay 50: 150/50 = 3.0. Above 1, subtracting the same amount from both sides raises the ratio." },
+  { t: "txn", q: "A company with a current ratio of 0.8 uses cash to pay an account payable. Its current ratio will:", o: ["Decrease", "Increase", "Stay the same", "Rise above 1.0"], a: 0, e: "80/100 = 0.8. Pay 40: 40/60 = 0.67. Below 1, equal subtraction lowers the ratio." },
   { t: "txn", q: "A company with a quick ratio of 1.2 buys inventory on credit. The quick ratio will:", o: ["Decrease", "Increase", "Stay the same", "Cannot be determined"], a: 0, e: "Inventory is not a quick asset, so quick assets stay the same while accounts payable rises." },
-  { t: "txn", q: "Collecting an account receivable will:", o: ["Leave both the current and quick ratios unchanged", "Increase the current ratio", "Decrease the quick ratio", "Increase working capital"], a: 0, e: "Cash and receivables are both current and quick assets. One replaces the other." },
-  { t: "txn", q: "Under the allowance method, writing off an uncollectible account receivable will:", o: ["Have no effect on the current ratio", "Decrease the current ratio", "Decrease net income", "Increase bad debt expense"], a: 0, e: "Dr Allowance, Cr Accounts receivable. Net receivables do not change. The expense was recognized when the allowance was estimated." },
-  { t: "txn", q: "Prepaying next year's insurance premium in cash will:", o: ["Leave the current ratio unchanged and lower the quick ratio", "Lower both the current and quick ratios", "Raise the current ratio", "Leave both ratios unchanged"], a: 0, e: "Prepaid insurance is a current asset but not a quick asset." },
-  { t: "txn", q: "Issuing long-term bonds for cash will:", o: ["Increase the current ratio and increase the debt ratio", "Decrease the current ratio and increase the debt ratio", "Increase the current ratio and decrease the debt ratio", "Have no effect on liquidity"], a: 0, e: "Cash (current asset) rises with no new current liability. Liabilities rise relative to assets." },
-  { t: "txn", q: "A company repurchases its own common stock for cash. Which is most likely?", o: ["EPS increases and debt-to-equity increases", "EPS decreases and debt-to-equity decreases", "EPS increases and debt-to-equity decreases", "No effect on EPS"], a: 0, e: "Fewer shares outstanding raise EPS. Equity falls, so D/E rises." },
-  { t: "txn", q: "Near year-end, a company with a current ratio above 1 pays off some short-term creditors to make its current ratio look better. This practice is called:", o: ["Window dressing", "Earnings smoothing", "Big bath accounting", "Channel stuffing"], a: 0, e: "Window dressing is timing transactions to make the balance sheet look better at the reporting date. Auditors watch for it." },
-  { t: "act", q: "Credit sales are $730,000 and average accounts receivable are $60,000. Using a 365-day year, days sales outstanding are:", o: ["30 days", "12.2 days", "60 days", "36.5 days"], a: 0, e: "Receivables turnover = 730,000 ÷ 60,000 = 12.17. DSO = 365 ÷ 12.17 = 30 days." },
-  { t: "act", q: "Days inventory outstanding is 45, days sales outstanding is 30 and days payables outstanding is 25. The cash conversion cycle is:", o: ["50 days", "75 days", "100 days", "40 days"], a: 0, e: "CCC = 45 + 30 − 25 = 50 days. The operating cycle (without payables) would be 75." },
-  { t: "act", q: "During a period of rising prices, a company using LIFO instead of FIFO will report:", o: ["A higher inventory turnover", "A higher current ratio", "A higher gross margin", "Higher ending inventory"], a: 0, e: "LIFO charges the newest, higher costs to COGS and leaves older, lower costs in inventory. Higher COGS ÷ lower inventory = higher turnover." },
-  { t: "act", q: "Inventory rose steadily during the year. Inventory turnover based on ENDING inventory, compared with turnover based on AVERAGE inventory, will be:", o: ["Lower", "Higher", "The same", "Cannot be determined"], a: 0, e: "Ending inventory is larger than average inventory, so the denominator is bigger and turnover is lower." },
-  { t: "act", q: "A much higher receivables turnover than the industry average may indicate:", o: ["Credit policy that is too strict and may be losing sales", "Poor collection effort", "Too much bad debt", "Too much inventory"], a: 0, e: "Fast collection is generally good, but very fast collection can mean credit terms are so tight that customers buy elsewhere." },
-  { t: "lev", q: "Which ratio is most useful for judging a company's ability to meet its interest payments?", o: ["Times interest earned", "Quick ratio", "Dividend payout ratio", "Inventory turnover"], a: 0, e: "TIE = EBIT ÷ Interest expense." },
-  { t: "lev", q: "A company's debt ratio (total liabilities ÷ total assets) is 60%. Its debt-to-equity ratio is:", o: ["1.50", "0.60", "0.40", "2.50"], a: 0, e: "Equity ratio = 40%. D/E = 0.60 ÷ 0.40 = 1.50." },
-  { t: "lev", q: "A company's debt ratio is 60%. Its equity multiplier is:", o: ["2.50", "1.50", "1.67", "0.40"], a: 0, e: "Equity multiplier = Assets ÷ Equity = 1 ÷ 0.40 = 2.50 (also 1 + D/E)." },
-  { t: "lev", q: "EBIT is $600,000, interest expense is $150,000 and the tax rate is 25%. Times interest earned is:", o: ["4.0", "3.0", "2.25", "5.0"], a: 0, e: "TIE = 600,000 ÷ 150,000 = 4.0. Taxes are not deducted from EBIT." },
-  { t: "lev", q: "Sales rise 10% and EBIT rises 25%. The degree of operating leverage is:", o: ["2.5", "0.4", "15", "1.25"], a: 0, e: "DOL = % change in EBIT ÷ % change in sales = 25% ÷ 10% = 2.5." },
-  { t: "lev", q: "DOL is 2.0 and DFL is 1.5. If sales increase 10%, EPS will increase by:", o: ["30%", "15%", "20%", "35%"], a: 0, e: "DTL = 2.0 × 1.5 = 3.0. EPS change = 3.0 × 10% = 30%." },
-  { t: "lev", q: "The fixed charge coverage ratio differs from times interest earned because it:", o: ["Adds lease payments to both the numerator and denominator", "Uses net income instead of EBIT", "Subtracts depreciation from EBIT", "Includes dividends in the numerator"], a: 0, e: "Fixed charge coverage = (EBIT + Lease payments) ÷ (Interest + Lease payments)." },
-  { t: "prof", q: "Net profit margin is 5%, total asset turnover is 2.0 and the equity multiplier is 1.5. Return on equity is:", o: ["15%", "10%", "7.5%", "8.5%"], a: 0, e: "DuPont: 5% × 2.0 × 1.5 = 15%." },
-  { t: "prof", q: "In the 5-step DuPont model, the interest burden ratio is:", o: ["EBT ÷ EBIT", "Net income ÷ EBT", "EBIT ÷ Sales", "Interest ÷ EBIT"], a: 0, e: "Tax burden = NI ÷ EBT, interest burden = EBT ÷ EBIT, then EBIT margin × asset turnover × equity multiplier." },
-  { t: "prof", q: "Which action would most likely increase return on assets?", o: ["Selling idle equipment at book value and using the cash to repay debt", "Issuing common stock for cash", "Buying inventory on credit", "Borrowing long-term to build cash reserves"], a: 0, e: "Total assets fall and interest expense falls (raising net income), so ROA rises. The others increase total assets." },
-  { t: "prof", q: "ROE is higher than ROA. This shows that:", o: ["The company uses debt financing (financial leverage)", "The company has no liabilities", "Net margin is falling", "Asset turnover is below 1"], a: 0, e: "ROE = ROA × Equity multiplier. The multiplier is above 1 whenever there are liabilities." },
-  { t: "mkt", q: "ROE is 20% and the dividend payout ratio is 40%. The sustainable growth rate is:", o: ["12%", "8%", "20%", "28%"], a: 0, e: "g = ROE × retention = 20% × (1 − 40%) = 12%." },
-  { t: "mkt", q: "The market price is $30 and EPS is $2.50. The P/E ratio is:", o: ["12.0", "0.083", "8.3%", "75"], a: 0, e: "P/E = 30 ÷ 2.50 = 12." },
-  { t: "mkt", q: "Dividends per share are $1.20 and EPS is $3.00. The dividend payout ratio is:", o: ["40%", "60%", "250%", "36%"], a: 0, e: "Payout = 1.20 ÷ 3.00 = 40%. Retention = 60%." },
-  { t: "mkt", q: "A 2-for-1 stock split will:", o: ["Leave the P/E ratio unchanged", "Double EPS", "Increase total equity", "Halve the P/E ratio"], a: 0, e: "Share price and EPS both halve, so P/E stays the same. Total equity does not change." },
-  { t: "mkt", q: "A price-to-book ratio below 1.0 means:", o: ["The market values the company's net assets at less than their book value", "The company is very profitable", "The company has no debt", "Dividends exceed earnings"], a: 0, e: "Market price per share is below book value per share." },
-  { t: "mkt", q: "Earnings yield is:", o: ["The reciprocal of the P/E ratio", "Dividends ÷ Price", "The same as ROE", "EPS × Price"], a: 0, e: "Earnings yield = EPS ÷ Price = 1 ÷ (P/E)." },
-  { t: "mkt", q: "When calculating EPS, the denominator should be:", o: ["The weighted average number of common shares outstanding", "Common shares outstanding at year-end", "Authorized shares", "Common plus preferred shares"], a: 0, e: "Shares are weighted by the portion of the year they were outstanding. Splits and stock dividends are applied retroactively." },
-  { t: "liq", q: "Which measures how many days a company can operate using only its liquid assets, without new revenue?", o: ["Defensive interval", "Cash conversion cycle", "Days sales outstanding", "Operating cycle"], a: 0, e: "Defensive interval = Quick assets ÷ Daily cash operating expenses." },
-  { t: "liq", q: "Which transaction changes the current ratio but NOT net working capital?", o: ["Paying accounts payable with cash", "Buying equipment for cash", "Issuing long-term debt for cash", "Collecting receivables"], a: 0, e: "Equal reduction of current assets and current liabilities leaves working capital the same while the ratio moves." },
-  { t: "cf", q: "Free cash flow is most commonly defined as:", o: ["Cash flow from operations minus capital expenditures", "Net income plus depreciation", "Cash at the end of the year", "EBITDA minus interest"], a: 0, e: "FCF = CFO − Capex. It is the cash available to repay debt, pay dividends or buy back shares." },
-  { t: "cf", q: "Operating cash flow is consistently far below net income. An internal auditor should most likely:", o: ["Investigate revenue recognition and growth in receivables", "Conclude earnings quality is high", "Ignore it because cash flow is not a ratio", "Recommend paying a larger dividend"], a: 0, e: "A low CFO ÷ NI (quality of earnings) ratio can signal aggressive accruals." },
-  { t: "gen", q: "A common-size income statement expresses each item as a percentage of:", o: ["Net sales", "Total assets", "Net income", "The same item in the base year"], a: 0, e: "This is vertical analysis. Horizontal (trend) analysis compares items to a base year." },
-  { t: "gen", q: "Which is the most important limitation of comparing ratios across companies?", o: ["Companies may use different accounting methods", "Ratios cannot be calculated from public data", "Ratios ignore the balance sheet", "Ratios only work for manufacturers"], a: 0, e: "Different inventory, depreciation and revenue methods reduce comparability. Ratios are also historical and can be affected by seasonality and inflation." },
-  { t: "gen", q: "Comparing a company's ratios over five years to spot trends is called:", o: ["Horizontal (trend) analysis", "Vertical analysis", "Cross-sectional analysis", "Benchmarking"], a: 0, e: "Cross-sectional analysis compares against other companies or the industry at the same point in time." }
+  { t: "txn", q: "Prepaying next year's insurance in cash will:", o: ["Leave the current ratio unchanged and lower the quick ratio", "Lower both the current and quick ratios", "Raise the current ratio", "Leave both ratios unchanged"], a: 0, e: "Prepaid items are current assets but are excluded from quick assets." },
+  { t: "txn", q: "Under the allowance method, writing off an uncollectible receivable will:", o: ["Have no effect on the current ratio", "Decrease the current ratio", "Decrease net income", "Increase the quick ratio"], a: 0, e: "Dr Allowance, Cr Accounts receivable: net receivables do not change." },
+  { t: "txn", q: "Which transaction changes the current ratio but NOT net working capital?", o: ["Paying accounts payable with cash", "Buying equipment for cash", "Issuing long-term bonds for cash", "Selling inventory at a profit"], a: 0, e: "Equal reductions in current assets and current liabilities leave net working capital unchanged while the ratio moves." },
+  // general
+  { t: "gen", q: "On a common-size (vertical) income statement, each item is expressed as a percentage of:", o: ["Sales", "Total assets", "Net income", "The same item in a base year"], a: 0, e: "Vertical analysis uses sales as 100% on the income statement and total assets as 100% on the balance sheet." },
+  { t: "gen", q: "Expressing each year's figures as a percentage of the same figures in a base year is:", o: ["Horizontal (trend) analysis", "Vertical analysis", "Benchmarking", "A balanced scorecard"], a: 0, e: "Horizontal common-size analysis compares two or more periods against a base period." },
+  { t: "gen", q: "Why do internal auditors use financial statement ratios in analytical procedures?", o: ["To identify fluctuations or relationships inconsistent with expectations that need further analysis", "To replace substantive testing entirely", "To prepare the financial statements", "To set the share price"], a: 0, e: "Ratios relate numbers to other numbers so that unexpected results can be investigated." },
+  { t: "gen", q: "Which is a nonfinancial performance measure?", o: ["Ratio of reworked units to completed units", "Return on assets", "Gross profit margin", "Dividend yield"], a: 0, e: "Nonfinancial measures are not expressed in monetary values, such as throughput time, setup time ratio and rework ratio." }
 ];
-const CALC_POOL = ["current", "quick", "cashr", "arto", "dso", "invto", "dio", "tato", "debtr", "de", "tie", "gm", "om", "nm", "roa", "roe", "eps", "pe", "payout", "dy", "bvps", "pb", "fcc", "ccc", "sgr", "em"];
+const CALC_POOL = ["current", "quick", "cfr", "nwcr", "arto", "dsr", "invto", "dsi", "apto", "dpo", "ccc", "debtr", "de", "tie", "gpm", "opm", "nim", "roa", "roe", "roi", "pe", "eps", "bvps", "payout", "dy"];
 const GIVENS = {
-  current: ["ca", "cl"], quick: ["cash", "sec", "ar", "inv", "prepaid", "cl"], cashr: ["cash", "sec", "ar", "cl"], arto: ["sales", "ar"], dso: ["sales", "ar"],
-  invto: ["sales", "cogs", "inv"], dio: ["cogs", "inv"], tato: ["sales", "ta"], debtr: ["tl", "eq", "ta"], de: ["tl", "eq"], tie: ["ebit", "interest", "ni"],
-  gm: ["sales", "cogs"], om: ["sales", "ebit"], nm: ["sales", "ni"], roa: ["ni", "ta"], roe: ["ni", "eq"], eps: ["ni", "prefDiv", "shares"], pe: ["price", "eps"],
-  payout: ["comDiv", "ni", "prefDiv"], dy: ["comDiv", "shares", "price"], bvps: ["comEq", "prefEq", "shares"], pb: ["price", "comEq", "shares"],
-  fcc: ["ebit", "interest", "lease"], ccc: ["sales", "cogs", "ar", "inv", "ap"], sgr: ["ni", "prefDiv", "comEq", "comDiv"], em: ["ta", "eq"]
+  current: ["ca", "cl"], quick: ["cash", "sec", "ar", "notesRec", "inv", "prepaid", "cl"], cfr: ["cfo", "cash", "cl"], nwcr: ["ca", "cl", "ta"],
+  arto: ["sales", "ar"], dsr: ["sales", "ar"], invto: ["sales", "cogs", "inv"], dsi: ["cogs", "inv"], apto: ["cogs", "purchases", "ap"], dpo: ["purchases", "ap"],
+  ccc: ["sales", "cogs", "purchases", "ar", "inv", "ap"], debtr: ["tl", "eq", "ta"], de: ["tl", "eq"], tie: ["opInc", "ebit", "interest", "ni"],
+  gpm: ["sales", "cogs"], opm: ["sales", "opInc", "ebit"], nim: ["sales", "ni"], roa: ["ni", "ta"], roe: ["ni", "eq"], roi: ["ni", "invested"],
+  pe: ["price", "eps"], eps: ["ni", "prefDiv", "shares"], bvps: ["eq", "prefEq", "shares"], payout: ["totalDiv", "ni", "shares"], dy: ["totalDiv", "prefDiv", "shares", "price"]
 };
-const GLBL = { ca: "Current assets", cl: "Current liabilities", ta: "Total assets", tl: "Total liabilities", eq: "Total equity", ebit: "EBIT", ni: "Net income", eps: "EPS" };
-const AVG_KEYS = { arto: ["ar"], dso: ["ar"], invto: ["inv"], dio: ["inv"], tato: ["ta"], roa: ["ta"], roe: ["eq"], em: ["ta", "eq"], ccc: ["ar", "inv", "ap"], sgr: ["comEq"] };
+const GLBL = { ca: "Current assets", cl: "Current liabilities", ta: "Total assets", tl: "Total liabilities", eq: "Total equity", ebit: "EBIT", ni: "Net income", eps: "EPS",
+  opInc: "Operating income", purchases: "Total purchases", invested: "Invested capital (noncurrent liabilities + equity)" };
+const AVG_KEYS = { arto: ["ar"], dsr: ["ar"], invto: ["inv"], dsi: ["inv"], apto: ["ap"], dpo: ["ap"], ccc: ["ar", "inv", "ap"], roa: ["ta"], roe: ["eq"], roi: ["invested"] };
 function calcQuestion() {
   const id = CALC_POOL[Math.floor(Math.random() * CALC_POOL.length)], r = RMAP[id];
   const v = r.calc(X2).v; if (!isFinite(v)) return null;
   const avgKs = settings.avg ? (AVG_KEYS[id] || []) : [];
   const given = (GIVENS[id] || []).map(k => {
     const lbl = GLBL[k] || LABEL[k];
-    if (avgKs.includes(k)) return `${lbl}: beginning ${n(D1[k])}, ending ${n(D2[k])}`;
-    return `${lbl}: ${k === "eps" || k === "price" ? "$" + nf2.format(D2[k]) : n(D2[k])}`;
+    if (avgKs.includes(k)) return `${lbl}: beginning $${n(D1[k])}, ending $${n(D2[k])}`;
+    return `${lbl}: ${k === "eps" || k === "price" ? "$" + nf2.format(D2[k]) : k === "shares" ? nf0.format(D2[k]) + " shares" : "$" + n(D2[k])}`;
   });
-  if (id === "ccc") given.push("Purchases = COGS + ending inventory − beginning inventory" + (settings.avg ? "" : ` (beginning inventory ${n(D1.inv)})`));
   // distractors
   const opts = new Set([fmt(v, r.unit)]);
   const traps = [];
   if (avgKs.length) { const x = makeCtx(D2, null); traps.push(r.calc(x).v); }
   if (id === "quick") traps.push((D2.ca - D2.inv) / D2.cl);
   if (id === "invto") traps.push(D2.sales / (settings.avg ? (D1.inv + D2.inv) / 2 : D2.inv));
-  if (id === "tie") traps.push(D2.ni / D2.interest);
+  if (id === "apto") traps.push(D2.cogs / (settings.avg ? (D1.ap + D2.ap) / 2 : D2.ap));
+  if (id === "tie") traps.push(D2.ni / D2.interest, D2.opInc / D2.interest);
+  if (id === "opm") traps.push(D2.ebit / D2.sales);
+  if (id === "cfr") traps.push(D2.cash / D2.cl);
+  if (id === "nwcr") traps.push(D2.nwc / D2.ca);
   if (id === "eps") traps.push(D2.ni / D2.shares);
+  if (id === "bvps") traps.push(D2.eq / D2.shares);
   if (id === "de") traps.push(D2.tl / D2.ta);
+  if (id === "debtr") traps.push(D2.tl / D2.eq);
   if (id === "pe") traps.push(D2.eps / D2.price);
   if (id === "roe") traps.push(D2.ni / D2.ta);
   traps.forEach(t => { if (isFinite(t) && opts.size < 4) opts.add(fmt(t, r.unit)); });
   let guard = 0;
   while (opts.size < 4 && guard++ < 40) { const f = [0.75, 0.85, 1.15, 1.3, 0.6, 1.5][Math.floor(Math.random() * 6)]; opts.add(fmt(v * f, r.unit)); }
   const list = shuffle([...opts]);
-  const days = ["dso", "dio", "ccc"].includes(id) ? ` Use a ${settings.days}-day year.` : "";
+  const days = ["dsr", "dsi", "dpo", "ccc"].includes(id) ? ` Use a ${settings.days}-day year.` : "";
   return { t: r.cat, q: `Using ${state.company}'s ${state.y2Label} figures, calculate the ${r.name.toLowerCase()}.${settings.avg && avgKs.length ? " Use average balances." : ""}${days}`, given, o: list, a: list.indexOf(fmt(v, r.unit)), e: r.calc(X2).steps.join("\n"), formula: r.formula, calc: true };
 }
 function txnQuestion() {
   const t = TXNS.filter(t => t.id !== "writeoff")[Math.floor(Math.random() * (TXNS.length - 1))];
-  const res = labResult(t.id, 100), pick = res[[0, 1, 4][Math.floor(Math.random() * 3)]];
+  const res = labResult(t.id, 10000), pick = res[[0, 1, 4][Math.floor(Math.random() * 3)]];
   const o = ["Increase", "Decrease", "No change"], a = { up: 0, down: 1, same: 2 }[pick.dir];
-  return { t: "txn", q: `${state.company} currently has a ${pick.name.toLowerCase()} of ${fmt(pick.a, pick.unit)}. It decides to: ${t.name.toLowerCase()} (amount $100k). The ${pick.name.toLowerCase()} will:`, o, a, e: `${t.je.join(" / ")}. After: ${fmt(pick.b, pick.unit)}. ${t.note}` };
+  return { t: "txn", q: `${state.company} currently has a ${pick.name.toLowerCase()} of ${fmt(pick.a, pick.unit)}. It decides to: ${t.name.toLowerCase()} (amount $10,000). The ${pick.name.toLowerCase()} will:`, o, a, e: `${t.je.join(" / ")}. After: ${fmt(pick.b, pick.unit)}. ${t.note}` };
 }
 let round = [], qi = 0, qScore = 0, answered = false;
 let stats = store.get("stats", {});
@@ -1124,7 +1064,7 @@ function renderQ() {
   const q = round[qi];
   $("#qPanel").innerHTML = `<span class="eyebrow">Question ${qi + 1} of ${round.length} · ${QTOPICS[q.t] || q.t}${q.calc ? " · calculation" : ""}</span>
     <p class="q-text" style="margin-top:6px">${esc(q.q)}</p>
-    ${q.given ? `<div class="q-given">${q.given.map(g => `<div>${esc(g)}</div>`).join("")}</div><p class="small muted" style="margin-top:4px">Amounts in thousands.</p>` : ""}
+    ${q.given ? `<div class="q-given">${q.given.map(g => `<div>${esc(g)}</div>`).join("")}</div>` : ""}
     <div class="opts">${q.o.map((o, i) => `<button class="opt" type="button" data-i="${i}"><span class="l">${"ABCD"[i]}</span><span>${esc(o)}</span></button>`).join("")}</div>
     <div id="qExplain"></div>`;
 }
@@ -1156,18 +1096,18 @@ function renderBars() {
 
 /* ---------- CHEAT SHEET ---------- */
 const TRAPS = [
-  ["Average vs ending balances", "Turnover ratios and returns (ROA, ROE) should use AVERAGE balance-sheet figures because the income statement covers a whole year. If the question only gives year-end figures, use them."],
-  ["360 vs 365 days", "Read the question. Using the wrong day count gives a distractor answer that is about 1.4% off."],
-  ["Sales vs COGS", "Receivables turnover uses (credit) sales. Inventory turnover uses COGS. Using sales for inventory turnover is a classic wrong answer."],
-  ["Moving toward 1", "Adding or subtracting the same amount to the top and bottom of a ratio moves it toward 1. Paying a current liability with cash raises a current ratio above 1 and lowers one below 1."],
-  ["Quick assets", "Cash + marketable securities + receivables. Inventory and prepaid expenses are both out."],
-  ["EBIT, not net income", "Times interest earned and fixed charge coverage use earnings BEFORE interest and taxes. If only net income is given, add back tax and interest."],
-  ["Preferred stock", "EPS, payout, book value per share and return on common equity all remove preferred dividends or preferred equity."],
-  ["Weighted average shares", "EPS uses weighted average shares. Stock splits and stock dividends are applied retroactively to all periods shown."],
-  ["Inventory methods in inflation", "LIFO: higher COGS, lower inventory, lower net income, higher inventory turnover, lower current ratio than FIFO."],
-  ["Leverage links", "Equity multiplier = 1 ÷ (1 − Debt ratio) = 1 + D/E. Know how to move between them in one step."],
-  ["Working capital is an amount", "Many transactions change the current ratio without changing working capital, for example paying payables with cash."],
-  ["Ratio limitations", "Ratios are historical, affected by accounting choices, seasonality, inflation and window dressing, and industry averages may not be a good benchmark."]
+  ["Average vs ending balances", "Turnover ratios, ROA, ROE and ROI use AVERAGE balances, (beginning + ending) ÷ 2, because the income statement covers a whole year. Year-end balances are only a simplification. For a highly seasonal business, average the monthly balances."],
+  ["Sales vs COGS vs purchases", "A/R turnover uses net CREDIT sales. Inventory turnover uses COST OF GOODS SOLD. A/P turnover uses total PURCHASES (COGS + ending inventory − beginning inventory)."],
+  ["Days ratios", "Days' sales in receivables, days' sales in inventory and days' payables outstanding are all Days in year ÷ the matching turnover. The book uses 365 days."],
+  ["Cash conversion cycle", "DSI + DSO − DPO. Payables are subtracted. The book also calls it the net operating cycle."],
+  ["Net working capital vs NWC ratio", "Net working capital is an amount (CA − CL). The NWC ratio divides it by TOTAL ASSETS. \"Working capital\" alone means current assets."],
+  ["Quick assets", "Cash & equivalents + short-term marketable securities + net receivables. Inventories and prepaid items are excluded."],
+  ["Cash flow ratio", "Uses cash flows from OPERATIONS (statement of cash flows), not the cash balance on the balance sheet."],
+  ["Moving toward 1", "Adding or subtracting the same amount on the top and bottom moves a ratio toward 1. Paying a current liability with cash raises a current ratio above 1 and lowers one below 1."],
+  ["EBIT vs operating income", "Times-interest-earned uses EBIT (after other income and expenses). Operating profit margin uses operating income (before them). In the book: operating income $150,000, EBIT $85,000."],
+  ["Preferred stock", "EPS subtracts preferred DIVIDENDS from net income. Book value per common share subtracts preferred STOCK from total equity."],
+  ["Payables turnover is the exception", "Higher turnover is usually better, but a high A/P turnover may mean the firm is not using the credit available to it."],
+  ["Context and limitations", "Compare ratios with the industry (benchmarking) and with prior years (trend analysis). Window dressing and seasonality can distort year-end balances; poor-quality receivables or inventory inflate the current ratio."]
 ];
 function renderSheet() {
   const qy = ($("#sheetSearch").value || "").toLowerCase();
