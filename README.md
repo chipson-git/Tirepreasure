@@ -72,3 +72,16 @@ tests/calc.test.js  — ტესტები
 
 > ⚠️ შედეგები საორიენტაციოა. ზუსტი გზის წნევისთვის იხელმძღვანელე ავტომობილის
 > მწარმოებლის მითითებით და საბურავის მაქსიმალური დატვირთვით.
+
+---
+
+## 📊 CIA Ratio Ledger (`ratios/`)
+
+A separate study app for CIA Part 3 financial ratios. Open `ratios/index.html` in a browser
+(or `http://localhost:8080/ratios/` with the server above).
+
+- 49 ratios in 6 groups (liquidity, activity, leverage, profitability, market, cash flow), each with the formula, a worked calculation using real numbers, what it means and a CIA exam tip
+- DuPont (3-step and 5-step) and a cash conversion cycle chart
+- Editable two-year financial statements, plus import from Excel/CSV
+- Transaction lab: see how a transaction moves the current ratio, quick ratio, debt ratio and others, with a guess mode
+- Flashcards, a 10-question practice quiz (concepts, calculations, transaction effects) and a cheat sheet of exam traps
